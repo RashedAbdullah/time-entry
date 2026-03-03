@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String           @id @default(uuid())
+  name        String
+  email       String           @unique
+  password    String
+  projects    Project[]
+  timeEntries TimeEntry[]
+  adjustments TimeAdjustment[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([email])
+}
+
+model Project {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  type        ProjectType @default(OFFICE)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  timeEntries TimeEntry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model TimeEntry {
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectId String?
+
+  date DateTime // Entry date (normalized to 00:00:00)
+
+  startTime DateTime
+  endTime   DateTime?
+
+  workspace   WorkspaceType @default(OFFICE)
+  description String?
+
+  adjustments TimeAdjustment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, date])
+  @@index([projectId])
+}
+
+model TimeAdjustment {
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+  timeEntryId String
+
+  minutes Int // Negative or positive
+  reason  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([timeEntryId])
+}
+
+enum WorkspaceType {
+  OFFICE
+  HOME
+}
+
+enum ProjectType {
+  PERSONAL
+  OFFICE
+  CLIENT
+}
