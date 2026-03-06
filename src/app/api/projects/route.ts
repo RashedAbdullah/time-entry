@@ -20,7 +20,7 @@ export const GET = async () => {
 export const POST = async (req: NextRequest) => {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
     const body = await req.json();
@@ -33,7 +33,10 @@ export const POST = async (req: NextRequest) => {
       );
     }
     const project = await prisma.project.create({
-      data: body,
+      data: {
+        ...body,
+        userId: session.user.id,
+      },
     });
     return NextResponse.json({ success: true, data: project });
   } catch (error: any) {
