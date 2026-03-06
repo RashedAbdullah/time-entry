@@ -1,4 +1,3 @@
-// src/components/projects/QuickProjectModal.tsx
 "use client";
 
 import { useForm } from "react-hook-form";

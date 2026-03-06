@@ -3,6 +3,8 @@ import * as z from "zod";
 
 export const timeEntrySchema = z
   .object({
+    startTime: z.string().min(1, "Start time is required"),
+    endTime: z.string().optional(),
     projectId: z.string().optional(),
     description: z
       .string()
@@ -14,8 +16,6 @@ export const timeEntrySchema = z
     date: z.date({
       required_error: "Date is required",
     }),
-    startTime: z.date().optional(),
-    endTime: z.date().optional(),
   })
   .refine(
     (data) => {

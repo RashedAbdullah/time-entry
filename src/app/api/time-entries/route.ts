@@ -26,14 +26,17 @@ function getMonthRange(month: string) {
    GET /api/time-entries
 ========================================== */
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -52,6 +55,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       userId: session.user.id,
     };
 
+    console.log("Log date ", date);
     // Filter by specific date
     if (date) {
       where.date = normalizeDate(date);
@@ -101,7 +105,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     return NextResponse.json(
       { success: false, message: "Failed to fetch time entries" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -117,20 +121,14 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const body = await req.json();
 
-    const {
-      date,
-      startTime,
-      endTime,
-      projectId,
-      workspace,
-      description,
-    } = body;
+    const { date, startTime, endTime, projectId, workspace, description } =
+      body;
 
     /* -------------------------------
        Basic Validation
@@ -139,17 +137,28 @@ export async function POST(req: NextRequest) {
     if (!date || !startTime) {
       return NextResponse.json(
         { success: false, message: "Date and startTime are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const parsedStart = new Date(startTime);
-    const parsedEnd = endTime ? new Date(endTime) : null;
+    function timeStringToDate(time: string, baseDate = new Date()) {
+      const [hours, minutes] = time.split(":").map(Number);
+
+      const date = new Date(baseDate);
+      date.setHours(hours, minutes, 0, 0);
+
+      return date;
+    }
+
+    const parsedStart = timeStringToDate(startTime, normalizeDate(date));
+    const parsedEnd = endTime
+      ? timeStringToDate(endTime, normalizeDate(date))
+      : null;
 
     if (parsedEnd && parsedEnd <= parsedStart) {
       return NextResponse.json(
         { success: false, message: "endTime must be greater than startTime" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -168,7 +177,7 @@ export async function POST(req: NextRequest) {
       if (!project) {
         return NextResponse.json(
           { success: false, message: "Invalid project" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -194,14 +203,14 @@ export async function POST(req: NextRequest) {
         success: true,
         data: entry,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("CREATE TIME ENTRY ERROR:", error);
 
     return NextResponse.json(
       { success: false, message: "Failed to create time entry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

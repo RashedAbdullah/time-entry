@@ -27,12 +27,6 @@ export function DashboardContainer() {
         <ActiveTimer />
       </div>
 
-      {/* Today's Summary */}
-      <TodaySummary />
-
-      {/* Quick Actions */}
-      <QuickActions />
-
       {/* Main Content Tabs */}
       <Tabs
         value={activeTab}
@@ -76,6 +70,12 @@ export function DashboardContainer() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Today's Summary */}
+      <TodaySummary />
+
+      {/* Quick Actions */}
+      <QuickActions />
     </div>
   );
 }

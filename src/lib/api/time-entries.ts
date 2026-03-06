@@ -1,9 +1,10 @@
-// src/lib/api/time-entries.ts
 const API_BASE = "/api";
+
+const date = new Date().toISOString().split("T")[0];
 
 export const api = {
   async getTodayEntries() {
-    const res = await fetch(`${API_BASE}/time-entries?date=today`);
+    const res = await fetch(`${API_BASE}/time-entries?date=${date}`);
     if (!res.ok) throw new Error("Failed to fetch today entries");
     return res.json();
   },
@@ -61,12 +62,18 @@ export const api = {
   },
 
   async adjustTime(entryId: string, data: any) {
-    const res = await fetch(`${API_BASE}/time-entries/${entryId}/adjust`, {
+    const res = await fetch(`${API_BASE}/time-entries/adjustments`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, timeEntryId: entryId }),
     });
     if (!res.ok) throw new Error("Failed to adjust time");
+    return res.json();
+  },
+
+  async getEntries() {
+    const res = await fetch(`${API_BASE}/time-entries`);
+    if (!res.ok) throw new Error("Failed to fetch entries");
     return res.json();
   },
 };

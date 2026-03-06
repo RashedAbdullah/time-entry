@@ -27,6 +27,7 @@ export function DayCell({ date, entries, isCurrentMonth, isToday }: DayCellProps
       entries={entries}
       open={isPopoverOpen}
       onOpenChange={setIsPopoverOpen}
+
     >
       <div
         onClick={() => setIsPopoverOpen(true)}

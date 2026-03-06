@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     if (!timeEntryId || minutes === 0) {
       return NextResponse.json(
         { success: false, message: "Invalid data" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,13 +31,14 @@ export async function POST(req: NextRequest) {
     if (!entry) {
       return NextResponse.json(
         { success: false, message: "Entry not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     const adjustment = await prisma.timeAdjustment.create({
       data: {
         timeEntryId,
+        userId: session.user.id,
         minutes,
         reason,
       },

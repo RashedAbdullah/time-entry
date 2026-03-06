@@ -34,7 +34,7 @@ export function ProjectSelector({
   const [open, setOpen] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
 
-  const selectedProject = projects.find((p) => p.id === value);
+  const selectedProject = projects?.find((p) => p.id === value);
 
   return (
     <>
@@ -73,7 +73,7 @@ export function ProjectSelector({
                 />
                 <span className="text-muted-foreground">No project</span>
               </CommandItem>
-              {projects.map((project) => (
+              {projects?.map((project) => (
                 <CommandItem
                   key={project.id}
                   onSelect={() => {

@@ -1,45 +1,29 @@
-// src/hooks/useTimeEntries.ts
-import useSWR from 'swr';
-import { useState } from 'react';
-import { api } from '@/lib/api/time-entries';
+import useSWR from "swr";
+import { useState } from "react";
+import { api } from "@/lib/api/time-entries";
 
 export function useTimeEntries() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data: todayEntries, error, mutate } = useSWR(
-    '/api/time-entries/today',
-    api.getTodayEntries
-  );
+  const today = new Date().toISOString().split("T")[0];
+
+  const {
+    data: todayEntries,
+    error,
+    mutate,
+  } = useSWR(`/api/time-entries?date=${today}`, api.getTodayEntries);
+
+  const { data: entries } = useSWR(`/api/time-entries`, api.getEntries);
 
   const { data: activeEntry } = useSWR(
-    '/api/time-entries/active',
-    api.getActiveEntry
+    "/api/time-entries/active",
+    api.getActiveEntry,
   );
 
   const createEntry = async (data: any) => {
     setIsLoading(true);
     try {
       await api.createEntry(data);
-      mutate();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const startTimer = async (data: any) => {
-    setIsLoading(true);
-    try {
-      await api.startTimer(data);
-      mutate();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const stopTimer = async () => {
-    setIsLoading(true);
-    try {
-      await api.stopTimer();
       mutate();
     } finally {
       setIsLoading(false);
@@ -66,7 +50,11 @@ export function useTimeEntries() {
     }
   };
 
-  const adjustTime = async (entryId: string, minutes: number, reason: string) => {
+  const adjustTime = async (
+    entryId: string,
+    minutes: number,
+    reason: string,
+  ) => {
     setIsLoading(true);
     try {
       await api.adjustTime(entryId, { minutes, reason });
@@ -77,15 +65,14 @@ export function useTimeEntries() {
   };
 
   return {
-    todayEntries,
+    todayEntries: todayEntries?.data,
     activeEntry,
     isLoading,
     error,
     createEntry,
-    startTimer,
-    stopTimer,
     updateEntry,
     deleteEntry,
     adjustTime,
+    entries: entries?.data,
   };
 }

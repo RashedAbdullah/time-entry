@@ -1,15 +1,14 @@
-// src/components/time-entry/TimeEntryForm.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTimeEntries } from '@/hooks/useTimeEntries';
-import { useProjects } from '@/hooks/useProjects';
-import { ProjectSelector } from '@/components/projects/ProjectSelector';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTimeEntries } from "@/hooks/useTimeEntries";
+import { useProjects } from "@/hooks/useProjects";
+import { ProjectSelector } from "@/components/projects/ProjectSelector";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -17,27 +16,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { timeEntrySchema, type TimeEntryFormData } from '@/lib/validations/time-entry.schema';
-import { Play, Square, Loader2 } from 'lucide-react';
+} from "@/components/ui/select";
+import {
+  timeEntrySchema,
+  type TimeEntryFormData,
+} from "@/lib/validations/time-entry.schema";
 
 export function TimeEntryForm() {
-  const [isTracking, setIsTracking] = useState(false);
-  const { createEntry, startTimer, stopTimer, isLoading } = useTimeEntries();
+  const { createEntry, isLoading } = useTimeEntries();
   const { projects } = useProjects();
 
   const form = useForm<TimeEntryFormData>({
     resolver: zodResolver(timeEntrySchema),
     defaultValues: {
-      description: '',
-      workspace: 'OFFICE',
+      startTime: "",
+      endTime: "",
+      description: "",
+      workspace: "OFFICE",
       date: new Date(),
     },
   });
@@ -47,23 +49,37 @@ export function TimeEntryForm() {
     form.reset();
   };
 
-  const handleStartTimer = async () => {
-    const values = form.getValues();
-    if (values.description || values.projectId) {
-      await startTimer(values);
-      setIsTracking(true);
-    }
-  };
-
-  const handleStopTimer = async () => {
-    await stopTimer();
-    setIsTracking(false);
-    form.reset();
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="startTime"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Start Time</FormLabel>
+              <FormControl>
+                <Input type="time" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="endTime"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>End Time</FormLabel>
+              <FormControl>
+                <Input type="time" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="projectId"
@@ -123,35 +139,8 @@ export function TimeEntryForm() {
         />
 
         <div className="flex gap-2">
-          {!isTracking ? (
-            <Button
-              type="button"
-              onClick={handleStartTimer}
-              disabled={isLoading}
-              className="flex-1"
-            >
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4 mr-2" />}
-              Start Timer
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              onClick={handleStopTimer}
-              variant="destructive"
-              className="flex-1"
-            >
-              <Square className="h-4 w-4 mr-2" />
-              Stop Timer
-            </Button>
-          )}
-
-          <Button
-            type="submit"
-            variant="outline"
-            className="flex-1"
-            disabled={isLoading}
-          >
-            Log Manually
+          <Button type="submit" className="flex-1" disabled={isLoading}>
+            Add Entry
           </Button>
         </div>
       </form>
