@@ -50,10 +50,12 @@ const EntryModal = ({
   open,
   onOpenChange,
   date,
+  onSuccess,
   defaultValues,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
   date: Date;
   defaultValues?: TimeEntry;
 }) => {
@@ -76,12 +78,16 @@ const EntryModal = ({
     try {
       console.log("Submit");
       if (defaultValues?.id) {
-        await updateEntry(defaultValues.id, data);
+        await updateEntry(defaultValues.id, {
+          ...data,
+          date: format(date, "yyyy-MM-dd"),
+        });
         toast.success("Time entry updated successfully");
       } else {
-        await createEntry(data);
+        await createEntry({ ...data, date: format(date, "yyyy-MM-dd") });
         toast.success("Time entry created successfully");
       }
+      onSuccess?.();
       form.reset();
     } catch (error) {
       console.error(error);
@@ -109,9 +115,9 @@ const EntryModal = ({
         projectId: "",
       });
     }
-  }, [defaultValues, date]);
-  
-  console.log("Modal date ", date);
+  }, [defaultValues]);
+
+  // console.log("Modal date ", date);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

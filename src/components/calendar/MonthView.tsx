@@ -15,6 +15,7 @@ import { useTimeEntries } from "@/hooks/useTimeEntries";
 import { DayCell } from "./DayCell";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { calculateTotalDuration, formatDuration } from "@/lib/utils/time.utils";
 
 export function MonthView() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -37,12 +38,14 @@ export function MonthView() {
     return acc;
   }, {});
 
+  const totalDuration = calculateTotalDuration(entries);
+
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">
-          {format(currentMonth, "MMMM yyyy")}
+          {format(currentMonth, "MMMM yyyy")} - {formatDuration(totalDuration)}
         </h2>
         <div className="flex gap-2">
           <Button variant="outline" size="icon" onClick={prevMonth}>

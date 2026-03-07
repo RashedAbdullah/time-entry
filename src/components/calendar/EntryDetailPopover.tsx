@@ -1,7 +1,6 @@
 "use client";
 
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
 import {
   Popover,
   PopoverContent,
@@ -15,6 +14,7 @@ import { DurationBadge } from "@/components/ui/DurationBadge";
 import { Pencil, Plus } from "lucide-react";
 import { useState } from "react";
 import EntryModal from "../modals/entry.modal";
+import { api } from "@/lib/api/time-entries";
 
 interface EntryDetailPopoverProps {
   date: Date;
@@ -60,6 +60,10 @@ export function EntryDetailPopover({
         onOpenChange={setOpenModal}
         date={date}
         defaultValues={selectedEntry}
+        onSuccess={() => {
+          setOpenModal(false);
+          api.getEntries();
+        }}
       />
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>{children}</PopoverTrigger>
@@ -93,7 +97,7 @@ export function EntryDetailPopover({
             )}
           </div>
 
-          <ScrollArea className="max-h-[300px]">
+          <ScrollArea className="max-h-[300px] overflow-y-auto">
             {entries.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
                 No entries for this day
