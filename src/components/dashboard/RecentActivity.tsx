@@ -38,7 +38,7 @@ export function RecentActivity() {
 
   return (
     <ScrollArea className="h-[400px] pr-4">
-      <div className="space-y-3">
+      <div className="space-y-3 overflow-y-auto">
         {todayEntries.map((entry: any) => (
           <TimeEntryItem key={entry.id} entry={entry} />
         ))}

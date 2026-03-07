@@ -43,7 +43,9 @@ export function DashboardContainer() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Time Entry Form */}
             <Card className="lg:col-span-1 p-4">
-              <h2 className="text-lg font-semibold mb-4">New Time Entry</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                New Time Entry ({new Date().toLocaleDateString()})
+              </h2>
               <TimeEntryForm />
             </Card>
 

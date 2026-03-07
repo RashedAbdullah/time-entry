@@ -70,10 +70,7 @@ export function MonthView() {
       <div className="grid grid-cols-7 gap-1">
         {/* Empty cells for days before month starts */}
         {Array.from({ length: monthStart.getDay() }).map((_, index) => (
-          <div
-            key={`empty-${index}`}
-            className="min-h-[120px] bg-muted/20"
-          />
+          <div key={`empty-${index}`} className="min-h-[120px] bg-muted/20" />
         ))}
 
         {/* Month days */}

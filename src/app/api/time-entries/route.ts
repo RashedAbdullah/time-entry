@@ -141,6 +141,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    console.log("Route level date", date);
+
     function timeStringToDate(time: string, baseDate = new Date()) {
       const [hours, minutes] = time.split(":").map(Number);
 

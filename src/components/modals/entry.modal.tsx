@@ -110,6 +110,8 @@ const EntryModal = ({
       });
     }
   }, [defaultValues, date]);
+  
+  console.log("Modal date ", date);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
