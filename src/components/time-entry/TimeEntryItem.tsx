@@ -1,4 +1,3 @@
-// src/components/time-entry/TimeEntryItem.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,14 +9,16 @@ import { DurationBadge } from "@/components/ui/DurationBadge";
 import { WorkspaceIcon } from "@/components/ui/WorkspaceIcon";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pencil, Clock, MoreVertical } from "lucide-react";
+import { Pencil, Clock, MoreVertical, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import EntryModal from "../modals/entry.modal";
+import { AddEditEntryModal } from "../modals/add-edit-entry.modal";
+import { useConfirmDialog } from "@/hooks/confirm-dialog-provider";
+import { toast } from "sonner";
 
 interface TimeEntryItemProps {
   entry: any;
@@ -26,21 +27,34 @@ interface TimeEntryItemProps {
 export function TimeEntryItem({ entry }: TimeEntryItemProps) {
   const [showAdjustment, setShowAdjustment] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { updateEntry, deleteEntry } = useTimeEntries();
+  const { deleteEntry } = useTimeEntries();
 
   const duration = entry.endTime
     ? new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()
     : Date.now() - new Date(entry.startTime).getTime();
 
+  const confirm = useConfirmDialog();
+
   const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this entry?")) {
+    try {
+      const ok = await confirm({
+        title: "Delete",
+        description: "Are you sure you want to delete it?",
+        confirmText: "Yes",
+        cancelText: "No",
+      });
+      if (!ok) return;
       await deleteEntry(entry.id);
+      toast.success("Successfully Deleted");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete");
     }
   };
 
   return (
     <>
-      <EntryModal
+      <AddEditEntryModal
         date={entry.date}
         onOpenChange={setIsEditing}
         open={isEditing}
@@ -54,9 +68,9 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
               {entry.project && <ProjectBadge project={entry.project} />}
               <WorkspaceIcon type={entry.workspace} />
               <span className="text-xs text-muted-foreground">
-                {format(new Date(entry.startTime), "HH:mm")}
+                {format(new Date(entry.startTime), "hh:mm a")}
                 {entry.endTime &&
-                  ` - ${format(new Date(entry.endTime), "HH:mm")}`}
+                  ` - ${format(new Date(entry.endTime), "hh:mm a")}`}
               </span>
             </div>
 
@@ -99,6 +113,7 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
                 onClick={handleDelete}
                 className="text-destructive"
               >
+                <Trash2 className="h-4 w-4 mr-2 text-destructive" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -6,3 +6,18 @@ export function dateToTimeString(date: string | Date) {
 
   return `${hours}:${minutes}`;
 }
+
+export function timeStringToDate(time: string, baseDate = new Date()) {
+  const [hours, minutes] = time.split(":").map(Number);
+
+  const date = new Date(baseDate);
+  date.setHours(hours, minutes, 0, 0);
+
+  return date;
+}
+
+export function normalizeDate(dateString: string) {
+  const d = new Date(dateString);
+  d.setUTCHours(0, 0, 0, 0);
+  return d;
+}

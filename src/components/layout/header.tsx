@@ -13,48 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { ModeToggle } from '@/components/ui/theme-toggle';
 import { Menu, User, Settings, LogOut, Clock } from "lucide-react";
 
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
-
-export function Navigations({ onMenuClick }: HeaderProps) {
+export function Navigations() {
   const { data: session } = useSession();
-  const pathname = usePathname();
-
-  const getPageTitle = () => {
-    if (pathname === "/") return "Dashboard";
-    if (pathname.startsWith("/projects")) return "Projects";
-    if (pathname.startsWith("/time-entries")) return "Time Entries";
-    if (pathname.startsWith("/reports")) return "Reports";
-    return "TimeTracker";
-  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        {/* Mobile menu button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden mr-2"
-          onClick={onMenuClick}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="container mx-auto sm:px-4 px-8 flex h-14 items-center">
         {/* Logo and title */}
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
             <Clock className="h-5 w-5 text-primary" />
-            <span className="font-bold hidden sm:inline-block">
-              TimeTracker
-            </span>
+            <span className="font-bol">TimeTracker</span>
           </Link>
-          <span className="text-muted-foreground">/</span>
-          <span className="font-medium">{getPageTitle()}</span>
         </div>
 
         {/* Right side actions */}

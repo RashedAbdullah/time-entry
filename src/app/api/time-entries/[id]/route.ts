@@ -2,24 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
-
-/* ------------------------------------------
-   Helpers
-------------------------------------------- */
-
-function normalizeDateFromDateTime(date: Date) {
-  const d = new Date(date);
-  d.setUTCHours(0, 0, 0, 0);
-  return d;
-}
+import { normalizeDate, timeStringToDate } from "@/lib/date-formatters";
 
 /* ==========================================
-   GET /api/time-entries/[entryId]
+   GET /api/time-entries/[id]
 ========================================== */
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -27,7 +18,7 @@ export async function GET(
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -53,7 +44,7 @@ export async function GET(
     if (!entry) {
       return NextResponse.json(
         { success: false, message: "Time entry not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -66,18 +57,18 @@ export async function GET(
 
     return NextResponse.json(
       { success: false, message: "Failed to fetch entry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 /* ==========================================
-   PATCH /api/time-entries/[entryId]
+   PATCH /api/time-entries/[id]
 ========================================== */
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -85,20 +76,15 @@ export async function PATCH(
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const { id } = await params;
     const body = await req.json();
 
-    const {
-      startTime,
-      endTime,
-      projectId,
-      workspace,
-      description,
-    } = body;
+    const { startTime, endTime, projectId, workspace, description, date } =
+      body;
 
     /* ---------------------------------
        Check Entry Ownership
@@ -114,7 +100,7 @@ export async function PATCH(
     if (!existingEntry) {
       return NextResponse.json(
         { success: false, message: "Time entry not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -125,19 +111,15 @@ export async function PATCH(
     let parsedStart = existingEntry.startTime;
     let parsedEnd = existingEntry.endTime;
 
-    if (startTime) parsedStart = new Date(startTime);
-    if (endTime) parsedEnd = new Date(endTime);
+    if (startTime) parsedStart = timeStringToDate(startTime, normalizeDate(date));
+    if (endTime) parsedEnd = timeStringToDate(endTime, normalizeDate(date));
 
     if (parsedEnd && parsedEnd <= parsedStart) {
       return NextResponse.json(
         { success: false, message: "endTime must be greater than startTime" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
-    /* ---------------------------------
-       Validate Project Ownership
-    ---------------------------------- */
 
     if (projectId) {
       const project = await prisma.project.findFirst({
@@ -150,7 +132,7 @@ export async function PATCH(
       if (!project) {
         return NextResponse.json(
           { success: false, message: "Invalid project" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -167,10 +149,7 @@ export async function PATCH(
         projectId: projectId ?? existingEntry.projectId,
         workspace: workspace ?? existingEntry.workspace,
         description:
-          description !== undefined
-            ? description
-            : existingEntry.description,
-        date: normalizeDateFromDateTime(parsedStart),
+          description !== undefined ? description : existingEntry.description,
       },
     });
 
@@ -183,7 +162,7 @@ export async function PATCH(
 
     return NextResponse.json(
       { success: false, message: "Failed to update entry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -194,7 +173,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -202,7 +181,7 @@ export async function DELETE(
     if (!session?.user?.id) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -222,7 +201,7 @@ export async function DELETE(
     if (!entry) {
       return NextResponse.json(
         { success: false, message: "Time entry not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -245,7 +224,7 @@ export async function DELETE(
 
     return NextResponse.json(
       { success: false, message: "Failed to delete entry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

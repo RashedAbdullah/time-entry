@@ -11,10 +11,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProjectBadge } from "@/components/projects/ProjectBadge";
 import { WorkspaceIcon } from "@/components/ui/WorkspaceIcon";
 import { DurationBadge } from "@/components/ui/DurationBadge";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import EntryModal from "../modals/entry.modal";
+import { AddEditEntryModal } from "../modals/add-edit-entry.modal";
 import { api } from "@/lib/api/time-entries";
+import { useConfirmDialog } from "@/hooks/confirm-dialog-provider";
+import { toast } from "sonner";
 
 interface EntryDetailPopoverProps {
   date: Date;
@@ -53,14 +55,32 @@ export function EntryDetailPopover({
     setOpenModal(true);
   };
 
+  const confirm = useConfirmDialog();
+  const handleDeleteEntry = async (id: any) => {
+    try {
+      const ok = await confirm({
+        title: "Delete Entry",
+        description: "Are you sure you want to delete this entry?",
+      });
+      if (!ok) return;
+      await api.deleteEntry(id);
+      api.getEntries();
+      toast.success("Entry deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete entry");
+      console.log(error);
+    }
+  };
+
   return (
     <>
-      <EntryModal
+      <AddEditEntryModal
         open={openModal}
         onOpenChange={setOpenModal}
         date={date}
         defaultValues={selectedEntry}
         onSuccess={() => {
+          setSelectedEntry(null);
           setOpenModal(false);
           api.getEntries();
         }}
@@ -80,6 +100,7 @@ export function EntryDetailPopover({
                 size="sm"
                 variant="outline"
                 onClick={() => {
+                  setSelectedEntry(null);
                   onOpenChange(false);
                   setOpenModal(true);
                 }}
@@ -126,9 +147,9 @@ export function EntryDetailPopover({
 
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>
-                            {format(new Date(entry.startTime), "HH:mm")}
+                            {format(new Date(entry.startTime), "hh:mm a")}
                             {entry.endTime &&
-                              ` - ${format(new Date(entry.endTime), "HH:mm")}`}
+                              ` - ${format(new Date(entry.endTime), "hh:mm a")}`}
                           </span>
                           {entry.endTime && (
                             <>
@@ -151,6 +172,15 @@ export function EntryDetailPopover({
                         onClick={() => handleEditEntry(entry?.id)}
                       >
                         <Pencil className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="opacity-0 group-hover:opacity-100 h-8 w-8"
+                        onClick={() => handleDeleteEntry(entry?.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>

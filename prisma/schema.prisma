@@ -49,8 +49,8 @@ model TimeEntry {
 
   date DateTime // Entry date (normalized to 00:00:00)
 
-  startDateTimeTime
-  endTime   DateTime?
+  startDateTime DateTime
+  endTime       DateTime?
 
   workspace   WorkspaceType @default(OFFICE)
   description String?

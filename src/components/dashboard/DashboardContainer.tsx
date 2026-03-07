@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { TodaySummary } from "./TodaySummary";
-import { QuickActions } from "./QuickActions";
 import { RecentActivity } from "./RecentActivity";
 import { MonthView } from "@/components/calendar/MonthView";
 import { TimeEntryForm } from "@/components/time-entry/TimeEntryForm";
 import { ActiveTimer } from "@/components/time-entry/ActiveTimer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import Projects from "../projects/projects";
 
 export function DashboardContainer() {
   const { data: session } = useSession();
@@ -33,11 +32,12 @@ export function DashboardContainer() {
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-4 lg:w-[400px]">
+        <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
           <TabsTrigger value="today">Today</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="Projects">Projects</TabsTrigger>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="monthly-report">Monthy Report</TabsTrigger>
         </TabsList>
 
         <TabsContent value="today" className="space-y-4">
@@ -72,13 +72,12 @@ export function DashboardContainer() {
             </div>
           </Card>
         </TabsContent>
+        <TabsContent value="projects">
+          <Card className="p-4">
+            <Projects />
+          </Card>
+        </TabsContent>
       </Tabs>
-
-      {/* Today's Summary */}
-      <TodaySummary />
-
-      {/* Quick Actions */}
-      <QuickActions />
     </div>
   );
 }

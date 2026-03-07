@@ -2,16 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
-
-/* ------------------------------------------
-   Utility Functions
-------------------------------------------- */
-
-function normalizeDate(dateString: string) {
-  const d = new Date(dateString);
-  d.setUTCHours(0, 0, 0, 0);
-  return d;
-}
+import { normalizeDate, timeStringToDate } from "@/lib/date-formatters";
 
 function getMonthRange(month: string) {
   const [year, monthIndex] = month.split("-").map(Number);
@@ -141,18 +132,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("Route level date", date);
-
-    function timeStringToDate(time: string, baseDate = new Date()) {
-      const [hours, minutes] = time.split(":").map(Number);
-
-      const date = new Date(baseDate);
-      date.setHours(hours, minutes, 0, 0);
-
-      return date;
-    }
-
+    console.log("startTime ", startTime);
     const parsedStart = timeStringToDate(startTime, normalizeDate(date));
+    console.log("parsedStart ", parsedStart);
     const parsedEnd = endTime
       ? timeStringToDate(endTime, normalizeDate(date))
       : null;

@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
 
 const projectSchema = z.object({
   name: z.string().min(1, "Project name is required").max(50),
@@ -44,28 +45,51 @@ interface QuickProjectModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (projectId: string) => void;
+  defaultValues?: any;
 }
 
-export function QuickProjectModal({
+export function AddEditProjectModal({
   open,
   onOpenChange,
   onSuccess,
+  defaultValues,
 }: QuickProjectModalProps) {
-  const { createProject, isCreating } = useProjects();
+  const { createProject, updateProject, isCreating } = useProjects();
 
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      type: "OFFICE",
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      type: defaultValues?.type || "OFFICE",
     },
   });
 
+  useEffect(() => {
+    if (defaultValues?.id && open) {
+      form.reset({
+        name: defaultValues.name,
+        description: defaultValues.description,
+        type: defaultValues.type,
+      });
+    } else if (!defaultValues?.id && open) {
+      form.reset({
+        name: "",
+        description: "",
+        type: "OFFICE",
+      });
+    }
+  }, [defaultValues, form]);
+
   const onSubmit = async (data: ProjectFormData) => {
     try {
-      const project = await createProject(data);
-      onSuccess?.(project.id);
+      if (defaultValues?.id) {
+        await updateProject(defaultValues?.id, data);
+        onSuccess?.(defaultValues?.id);
+      } else {
+        const project = await createProject(data);
+        onSuccess?.(project.id);
+      }
       onOpenChange(false);
       form.reset();
     } catch (error) {
@@ -77,9 +101,12 @@ export function QuickProjectModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>
+            {defaultValues?.id ? "Update Project" : "Create New Project"}
+          </DialogTitle>
           <DialogDescription>
-            Add a new project to organize your time entries.
+            {defaultValues?.id ? "Update Project" : "Add a new project"} to
+            organize your time entries.
           </DialogDescription>
         </DialogHeader>
 
@@ -110,7 +137,7 @@ export function QuickProjectModal({
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                     </FormControl>
@@ -155,7 +182,7 @@ export function QuickProjectModal({
                 {isCreating && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Create Project
+                {defaultValues?.id ? "Update Project" : "Create Project"}
               </Button>
             </DialogFooter>
           </form>

@@ -1,12 +1,11 @@
-// src/components/calendar/DayCell.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { EntryDetailPopover } from './EntryDetailPopover';
-import { calculateTotalDuration, formatDuration } from '@/lib/utils/time.utils';
-import { cn } from '@/lib/utils';
-import { Clock } from 'lucide-react';
+import { useState } from "react";
+import { format } from "date-fns";
+import { EntryDetailPopover } from "./EntryDetailPopover";
+import { calculateTotalDuration, formatDuration } from "@/lib/utils/time.utils";
+import { cn } from "@/lib/utils";
+import { Clock } from "lucide-react";
 
 interface DayCellProps {
   date: Date;
@@ -15,7 +14,12 @@ interface DayCellProps {
   isToday: boolean;
 }
 
-export function DayCell({ date, entries, isCurrentMonth, isToday }: DayCellProps) {
+export function DayCell({
+  date,
+  entries,
+  isCurrentMonth,
+  isToday,
+}: DayCellProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const totalDuration = calculateTotalDuration(entries);
@@ -27,7 +31,6 @@ export function DayCell({ date, entries, isCurrentMonth, isToday }: DayCellProps
       entries={entries}
       open={isPopoverOpen}
       onOpenChange={setIsPopoverOpen}
-
     >
       <div
         onClick={() => setIsPopoverOpen(true)}
@@ -37,15 +40,14 @@ export function DayCell({ date, entries, isCurrentMonth, isToday }: DayCellProps
           !isCurrentMonth && "bg-muted/20 text-muted-foreground",
           isToday && "border-primary border-2",
           hasEntries && "bg-primary/5",
-          "flex flex-col"
+          "flex flex-col",
         )}
       >
         <div className="flex justify-between items-start">
-          <span className={cn(
-            "text-sm font-medium",
-            isToday && "text-primary"
-          )}>
-            {format(date, 'd')}
+          <span
+            className={cn("text-sm font-medium", isToday && "text-primary")}
+          >
+            {format(date, "d")}
           </span>
           {hasEntries && (
             <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
@@ -56,7 +58,7 @@ export function DayCell({ date, entries, isCurrentMonth, isToday }: DayCellProps
 
         {hasEntries && (
           <div className="mt-2 space-y-1 flex-1">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 text-xs text-primary">
               <Clock className="h-3 w-3" />
               <span>{formatDuration(totalDuration)}</span>
             </div>
@@ -68,8 +70,9 @@ export function DayCell({ date, entries, isCurrentMonth, isToday }: DayCellProps
                   key={entry.id}
                   className="text-xs truncate rounded px-1 py-0.5 bg-background"
                 >
-                  {entry.project?.name || 'No project'} - {entry.description?.slice(0, 20)}
-                  {entry.description?.length > 20 && '...'}
+                  {entry.project?.name || "No project"} -{" "}
+                  {entry.description?.slice(0, 20)}
+                  {entry.description?.length > 20 && "..."}
                 </div>
               ))}
               {entries.length > 2 && (

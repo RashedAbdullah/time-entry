@@ -2,13 +2,11 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useProjects } from "@/hooks/useProjects";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -46,7 +44,7 @@ interface TimeEntry extends TimeEntryFormData {
   id: string;
 }
 
-const EntryModal = ({
+export const AddEditEntryModal = ({
   open,
   onOpenChange,
   date,
@@ -55,7 +53,7 @@ const EntryModal = ({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: () => void;
+  onSuccess?: (entryId: string) => void;
   date: Date;
   defaultValues?: TimeEntry;
 }) => {
@@ -69,25 +67,32 @@ const EntryModal = ({
       endTime: dateToTimeString(defaultValues?.endTime || "") || "",
       description: defaultValues?.description || "",
       workspace: defaultValues?.workspace || "OFFICE",
-      date: defaultValues?.date || date,
+      date: new Date(defaultValues?.date) || date,
       projectId: defaultValues?.projectId || "",
     },
   });
 
   const onSubmit = async (data: TimeEntryFormData) => {
     try {
-      console.log("Submit");
+      console.log(data.endTime);
       if (defaultValues?.id) {
         await updateEntry(defaultValues.id, {
           ...data,
-          date: format(date, "yyyy-MM-dd"),
+          date: format(data.date, "yyyy-MM-dd"),
+          projectId: data.projectId || null,
         });
+        onSuccess?.(defaultValues?.id);
         toast.success("Time entry updated successfully");
       } else {
-        await createEntry({ ...data, date: format(date, "yyyy-MM-dd") });
+        const entry = await createEntry({
+          ...data,
+          date: format(data.date, "yyyy-MM-dd"),
+          projectId: data.projectId || null,
+        });
+        onSuccess?.(entry?.id);
         toast.success("Time entry created successfully");
       }
-      onSuccess?.();
+
       form.reset();
     } catch (error) {
       console.error(error);
@@ -102,7 +107,7 @@ const EntryModal = ({
         endTime: dateToTimeString(defaultValues?.endTime || "") || "",
         description: defaultValues?.description || "",
         workspace: defaultValues?.workspace || "OFFICE",
-        date: defaultValues?.date || date,
+        date: new Date(defaultValues?.date) || date,
         projectId: defaultValues?.projectId || "",
       });
     } else if (open && !defaultValues?.id) {
@@ -115,9 +120,7 @@ const EntryModal = ({
         projectId: "",
       });
     }
-  }, [defaultValues]);
-
-  // console.log("Modal date ", date);
+  }, [open, defaultValues, date, form]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -133,7 +136,12 @@ const EntryModal = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (errors) =>
+              console.log("Validation errors:", errors),
+            )}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="startTime"
@@ -204,12 +212,9 @@ const EntryModal = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Workspace</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select workspace" />
                       </SelectTrigger>
                     </FormControl>
@@ -241,4 +246,3 @@ const EntryModal = ({
   );
 };
 
-export default EntryModal;

@@ -13,6 +13,12 @@ export const GET = async () => {
     where: {
       userId: session.user.id,
     },
+    include: {
+      timeEntries: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
   return NextResponse.json({ success: true, data: projects });
 };

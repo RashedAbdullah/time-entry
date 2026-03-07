@@ -27,7 +27,7 @@ export const api = {
 
   async updateProject(id: string, data: any) {
     const res = await fetch(`${API_BASE}/projects/${id}`, {
-      method: "PATCH",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });

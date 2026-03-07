@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ProjectBadge } from "./ProjectBadge";
-import { QuickProjectModal } from "./QuickProjectModal";
+import { AddEditProjectModal } from "../modals/add-edit-project.modal";
 
 interface ProjectSelectorProps {
   value?: string;
@@ -58,12 +58,13 @@ export function ProjectSelector({
           <Command>
             <CommandInput placeholder="Search projects..." />
             <CommandEmpty>No project found.</CommandEmpty>
-            <CommandGroup>
+            <CommandGroup className="hover:bg-transparent">
               <CommandItem
                 onSelect={() => {
                   onChange("");
                   setOpen(false);
                 }}
+                className="cursor-pointer"
               >
                 <Check
                   className={cn(
@@ -80,6 +81,7 @@ export function ProjectSelector({
                     onChange(project.id);
                     setOpen(false);
                   }}
+                  className="cursor-pointer"
                 >
                   <Check
                     className={cn(
@@ -98,6 +100,7 @@ export function ProjectSelector({
                   setOpen(false);
                   setShowProjectModal(true);
                 }}
+                className="cursor-pointer"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Create new project
@@ -107,7 +110,7 @@ export function ProjectSelector({
         </PopoverContent>
       </Popover>
 
-      <QuickProjectModal
+      <AddEditProjectModal
         open={showProjectModal}
         onOpenChange={setShowProjectModal}
         onSuccess={(projectId) => {
