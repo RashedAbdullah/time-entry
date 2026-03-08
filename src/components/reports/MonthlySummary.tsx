@@ -1,4 +1,3 @@
-// src/components/reports/MonthlySummary.tsx
 "use client";
 
 import { useMonthlyReport } from "@/hooks/useMonthlyReport";

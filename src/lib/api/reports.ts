@@ -1,10 +1,9 @@
-// src/lib/api/reports.ts
 const API_BASE = "/api";
 
 export const api = {
   async getMonthlyReport(year: number, month: number) {
     const res = await fetch(
-      `${API_BASE}/reports/monthly?year=${year}&month=${month}`,
+      `${API_BASE}/reports/monthly?month=${year}-${month}`,
     );
     if (!res.ok) throw new Error("Failed to fetch monthly report");
     return res.json();

@@ -1,203 +1,75 @@
-// src/lib/utils/export.utils.ts
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-import * as XLSX from "xlsx";
-import { format } from "date-fns";
-import { formatDuration } from "./time.utils";
-
-// Extend jsPDF with autoTable
-declare module "jspdf" {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
+import { saveAs } from "file-saver";
 
 export async function exportToPDF(data: any[], fileName: string) {
-  const doc = new jsPDF();
+  try {
+    // Build query params
+    const params = new URLSearchParams();
+    if (data.length > 0) {
+      // You might want to pass date range instead of full data
+      params.append("startDate", data[0]?.date || "");
+      params.append("endDate", data[data.length - 1]?.date || "");
+    }
 
-  // Add title
-  doc.setFontSize(18);
-  doc.text("Time Entries Report", 14, 22);
+    const response = await fetch(
+      `/api/reports/export/pdf?${params.toString()}`,
+    );
 
-  // Add generation date
-  doc.setFontSize(10);
-  doc.text(`Generated: ${format(new Date(), "PPP")}`, 14, 30);
+    if (!response.ok) {
+      throw new Error("Failed to export PDF");
+    }
 
-  // Prepare table data
-  const tableData = data.map((entry) => [
-    format(new Date(entry.date), "PP"),
-    entry.project?.name || "-",
-    entry.description || "-",
-    entry.workspace,
-    entry.endTime
-      ? formatDuration(
-          new Date(entry.endTime).getTime() -
-            new Date(entry.startTime).getTime(),
-        )
-      : "In progress",
-  ]);
-
-  // Add table
-  doc.autoTable({
-    startY: 35,
-    head: [["Date", "Project", "Description", "Workspace", "Duration"]],
-    body: tableData,
-    theme: "striped",
-    headStyles: { fillColor: [41, 128, 185] },
-  });
-
-  // Save PDF
-  doc.save(`${fileName}.pdf`);
+    const blob = await response.blob();
+    saveAs(blob, `${fileName}.pdf`);
+  } catch (error) {
+    console.error("PDF export failed:", error);
+    throw error;
+  }
 }
 
 export async function exportToExcel(data: any[], fileName: string) {
-  // Transform data for Excel
-  const excelData = data.map((entry) => ({
-    Date: format(new Date(entry.date), "PP"),
-    Project: entry.project?.name || "-",
-    Description: entry.description || "-",
-    Workspace: entry.workspace,
-    "Start Time": format(new Date(entry.startTime), "HH:mm"),
-    "End Time": entry.endTime ? format(new Date(entry.endTime), "HH:mm") : "-",
-    Duration: entry.endTime
-      ? formatDuration(
-          new Date(entry.endTime).getTime() -
-            new Date(entry.startTime).getTime(),
-        )
-      : "In progress",
-    "Has Adjustments": entry.adjustments?.length > 0 ? "Yes" : "No",
-  }));
+  try {
+    const params = new URLSearchParams();
+    if (data.length > 0) {
+      params.append("startDate", data[0]?.date || "");
+      params.append("endDate", data[data.length - 1]?.date || "");
+    }
 
-  // Create workbook and worksheet
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(excelData);
+    const response = await fetch(
+      `/api/reports/export/excel?${params.toString()}`,
+    );
 
-  // Auto-size columns
-  const colWidths = [];
-  for (let i = 0; i < Object.keys(excelData[0] || {}).length; i++) {
-    colWidths.push({ wch: 15 });
+    if (!response.ok) {
+      throw new Error("Failed to export Excel");
+    }
+
+    const blob = await response.blob();
+    saveAs(blob, `${fileName}.xlsx`);
+  } catch (error) {
+    console.error("Excel export failed:", error);
+    throw error;
   }
-  ws["!cols"] = colWidths;
-
-  // Add to workbook
-  XLSX.utils.book_append_sheet(wb, ws, "Time Entries");
-
-  // Save file
-  XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
 
-export function exportToJSON(data: any[], fileName: string) {
-  const jsonString = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
+export async function exportToJSON(data: any[], fileName: string) {
+  try {
+    const params = new URLSearchParams();
+    if (data.length > 0) {
+      params.append("startDate", data[0]?.date || "");
+      params.append("endDate", data[data.length - 1]?.date || "");
+    }
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${fileName}.json`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
+    const response = await fetch(
+      `/api/reports/export/json?${params.toString()}`,
+    );
 
-export function exportToCSV(data: any[], fileName: string) {
-  const headers = [
-    "Date",
-    "Project",
-    "Description",
-    "Workspace",
-    "Start Time",
-    "End Time",
-    "Duration",
-  ];
+    if (!response.ok) {
+      throw new Error("Failed to export JSON");
+    }
 
-  const csvData = data.map((entry) => [
-    format(new Date(entry.date), "yyyy-MM-dd"),
-    entry.project?.name || "",
-    entry.description || "",
-    entry.workspace,
-    format(new Date(entry.startTime), "HH:mm"),
-    entry.endTime ? format(new Date(entry.endTime), "HH:mm") : "",
-    entry.endTime
-      ? formatDuration(
-          new Date(entry.endTime).getTime() -
-            new Date(entry.startTime).getTime(),
-        )
-      : "",
-  ]);
-
-  const csvContent = [
-    headers.join(","),
-    ...csvData.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-  ].join("\n");
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${fileName}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-export function prepareReportData(
-  entries: any[],
-  options?: {
-    groupBy?: "day" | "project" | "workspace";
-    includeSummary?: boolean;
-  },
-) {
-  if (!options) return entries;
-
-  const { groupBy, includeSummary } = options;
-  let data = entries;
-
-  if (groupBy === "day") {
-    const grouped = entries.reduce((acc: any, entry) => {
-      const date = format(new Date(entry.date), "yyyy-MM-dd");
-      if (!acc[date]) {
-        acc[date] = {
-          date,
-          entries: [],
-          totalDuration: 0,
-        };
-      }
-      acc[date].entries.push(entry);
-      if (entry.endTime) {
-        acc[date].totalDuration +=
-          new Date(entry.endTime).getTime() -
-          new Date(entry.startTime).getTime();
-      }
-      return acc;
-    }, {});
-    data = Object.values(grouped);
+    const blob = await response.blob();
+    saveAs(blob, `${fileName}.json`);
+  } catch (error) {
+    console.error("JSON export failed:", error);
+    throw error;
   }
-
-  if (includeSummary) {
-    const totalDuration = entries.reduce((sum, entry) => {
-      if (entry.endTime) {
-        return (
-          sum +
-          (new Date(entry.endTime).getTime() -
-            new Date(entry.startTime).getTime())
-        );
-      }
-      return sum;
-    }, 0);
-
-    return {
-      data,
-      summary: {
-        totalEntries: entries.length,
-        totalDuration,
-        completedEntries: entries.filter((e) => e.endTime).length,
-        activeEntries: entries.filter((e) => !e.endTime).length,
-      },
-    };
-  }
-
-  return data;
 }

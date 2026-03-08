@@ -26,6 +26,8 @@ export async function GET(req: NextRequest) {
   const start = new Date(Date.UTC(year, m - 1, 1));
   const end = new Date(Date.UTC(year, m, 1));
 
+  console.log("Start ", start, "End ", end);
+
   const entries = await prisma.timeEntry.findMany({
     where: {
       userId: session.user.id,

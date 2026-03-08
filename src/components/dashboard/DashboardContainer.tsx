@@ -9,6 +9,7 @@ import { ActiveTimer } from "@/components/time-entry/ActiveTimer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import Projects from "../projects/projects";
+import Reports from "../reports/reports";
 
 export function DashboardContainer() {
   const { data: session } = useSession();
@@ -32,12 +33,11 @@ export function DashboardContainer() {
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
+        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
           <TabsTrigger value="today">Today</TabsTrigger>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="projects">Projects</TabsTrigger>
-          <TabsTrigger value="monthly-report">Monthy Report</TabsTrigger>
         </TabsList>
 
         <TabsContent value="today" className="space-y-4">
@@ -66,10 +66,7 @@ export function DashboardContainer() {
 
         <TabsContent value="reports">
           <Card className="p-4">
-            {/* Report components will go here */}
-            <div className="h-96 flex items-center justify-center text-muted-foreground">
-              Reports view coming soon
-            </div>
+            <Reports />
           </Card>
         </TabsContent>
         <TabsContent value="projects">
