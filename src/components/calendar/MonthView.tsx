@@ -41,7 +41,7 @@ export function MonthView() {
   const totalDuration = calculateTotalDuration(entries);
 
   return (
-    <div className="space-y-4">
+    <div>
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">
