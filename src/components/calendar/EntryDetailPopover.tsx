@@ -44,7 +44,7 @@ export function EntryDetailPopover({
       return (
         total +
         (new Date(entry.endTime).getTime() -
-          new Date(entry.startTime).getTime())
+          new Date(entry.startDateTime).getTime())
       );
     }
     return total;
@@ -169,7 +169,7 @@ export function EntryDetailPopover({
 
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <span>
-                            {format(new Date(entry.startTime), "hh:mm a")}
+                            {format(new Date(entry.startDateTime), "hh:mm a")}
                             {entry.endTime &&
                               ` - ${format(new Date(entry.endTime), "hh:mm a")}`}
                           </span>
@@ -179,7 +179,7 @@ export function EntryDetailPopover({
                               <DurationBadge
                                 duration={
                                   new Date(entry.endTime).getTime() -
-                                  new Date(entry.startTime).getTime()
+                                  new Date(entry.startDateTime).getTime()
                                 }
                               />
                             </>

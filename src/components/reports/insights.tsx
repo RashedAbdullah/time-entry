@@ -290,7 +290,7 @@ const Insights = () => {
                             {entry.description || "-"}
                           </td>
                           <td className="py-2 px-4">{entry.workspace}</td>
-                          <td className="py-2 px-4">{entry.startTime}</td>
+                          <td className="py-2 px-4">{entry.startDateTime}</td>
                           <td className="py-2 px-4">{entry.endTime || "-"}</td>
                           <td className="py-2 px-4 font-mono">
                             {entry.duration}

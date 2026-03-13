@@ -36,7 +36,7 @@ export function TimeEntryForm() {
   const form = useForm<TimeEntryFormData>({
     resolver: zodResolver(timeEntrySchema),
     defaultValues: {
-      startTime: "",
+      startDateTime: "",
       endTime: "",
       description: "",
       workspace: "OFFICE",
@@ -54,7 +54,7 @@ export function TimeEntryForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="startTime"
+          name="startDateTime"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Start Time</FormLabel>

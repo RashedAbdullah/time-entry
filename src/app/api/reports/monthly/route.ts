@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
       adjustments: true,
       project: true,
     },
-    orderBy: { startTime: "asc" },
+    orderBy: { startDateTime: "asc" },
   });
 
   const days: any = {};
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     const dateKey = e.date.toISOString().slice(0, 10);
 
     const base = e.endTime
-      ? (e.endTime.getTime() - e.startTime.getTime()) / 60000
+      ? (e.endTime.getTime() - e.startDateTime.getTime()) / 60000
       : 0;
 
     const adjust = e.adjustments.reduce((a, b) => a + b.minutes, 0);

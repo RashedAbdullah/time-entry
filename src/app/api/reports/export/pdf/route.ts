@@ -51,10 +51,10 @@ export async function GET(req: NextRequest) {
     doc.moveDown();
 
     // Summary
-    const totalMinutes = entries.reduce((sum: number, e: any) => {
+    const totalMinutes = entries.reduce((sum: number, e) => {
       if (e.endTime) {
         return (
-          sum + (e.endTime.getTime() - e.startTime.getTime()) / (1000 * 60)
+          sum + (e.endTime.getTime() - e.startDateTime.getTime()) / (1000 * 60)
         );
       }
       return sum;
@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
       }
 
       const duration = entry.endTime
-        ? `${Math.floor((entry.endTime.getTime() - entry.startTime.getTime()) / (1000 * 60))}m`
+        ? `${Math.floor((entry.endTime.getTime() - entry.startDateTime.getTime()) / (1000 * 60))}m`
         : "In progress";
 
       doc.text(format(new Date(entry.date), "PP"), 50, y);

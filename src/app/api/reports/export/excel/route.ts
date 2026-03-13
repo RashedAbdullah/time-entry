@@ -47,10 +47,10 @@ export async function GET(req: NextRequest) {
       { header: "Value", key: "value", width: 15 },
     ];
 
-    const totalMinutes = entries.reduce((sum: number, e: any) => {
+    const totalMinutes = entries.reduce((sum: number, e) => {
       if (e.endTime) {
         return (
-          sum + (e.endTime.getTime() - e.startTime.getTime()) / (1000 * 60)
+          sum + (e.endTime.getTime() - e.startDateTime.getTime()) / (1000 * 60)
         );
       }
       return sum;
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
       { header: "Project", key: "project", width: 20 },
       { header: "Description", key: "description", width: 30 },
       { header: "Workspace", key: "workspace", width: 12 },
-      { header: "Start Time", key: "startTime", width: 10 },
+      { header: "Start Time", key: "startDateTime", width: 10 },
       { header: "End Time", key: "endTime", width: 10 },
       { header: "Duration", key: "duration", width: 15 },
       { header: "Adjustments", key: "adjustments", width: 12 },
@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
 
     // Add data
     entries.forEach((entry) => {
-      const start = new Date(entry?.startTime);
+      const start = new Date(entry?.startDateTime);
       const end = entry?.endTime ? new Date(entry.endTime) : null;
 
       let duration = "";
@@ -129,7 +129,7 @@ export async function GET(req: NextRequest) {
         project: entry.project?.name || "-",
         description: entry.description || "-",
         workspace: entry.workspace,
-        startTime: format(start, "HH:mm"),
+        startDateTime: format(start, "HH:mm"),
         endTime: end ? format(end, "HH:mm") : "-",
         duration: duration,
         adjustments:
@@ -142,7 +142,7 @@ export async function GET(req: NextRequest) {
     // Projects summary sheet
     const projectsSheet = workbook.addWorksheet("Projects Summary");
 
-    const projectStats = entries.reduce((acc: any, entry) => {
+    const projectStats = entries.reduce((acc: any, entry: any) => {
       if (entry.project) {
         if (!acc[entry.project.id]) {
           acc[entry.project.id] = {
@@ -154,7 +154,7 @@ export async function GET(req: NextRequest) {
         }
         if (entry.endTime) {
           const minutes =
-            (entry.endTime.getTime() - entry.startTime.getTime()) / (1000 * 60);
+            (entry.endTime.getTime() - entry.startDateTime.getTime()) / (1000 * 60);
           acc[entry.project.id].totalMinutes += minutes;
         }
         acc[entry.project.id].entryCount++;

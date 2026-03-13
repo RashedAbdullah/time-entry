@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Calculate statistics
-    const projectStats = entries.reduce((acc: any, entry) => {
+    const projectStats = entries.reduce((acc, entry) => {
       if (entry.project) {
         if (!acc[entry.project.id]) {
           acc[entry.project.id] = {
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
         }
         if (entry.endTime) {
           acc[entry.project.id].totalDuration +=
-            entry.endTime.getTime() - entry.startTime.getTime();
+            entry.endTime.getTime() - entry.startDateTime.getTime();
         }
         acc[entry.project.id].entryCount++;
       }
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
         totalEntries: entries.length,
         totalTime: entries.reduce((sum, e) => {
           if (e.endTime) {
-            return sum + (e.endTime.getTime() - e.startTime.getTime());
+            return sum + (e.endTime.getTime() - e.startDateTime.getTime());
           }
           return sum;
         }, 0),
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
       entries: entries.map((entry) => ({
         id: entry.id,
         date: entry.date,
-        startTime: entry.startTime,
+        startDateTime: entry.startDateTime,
         endTime: entry.endTime,
         description: entry.description,
         workspace: entry.workspace,

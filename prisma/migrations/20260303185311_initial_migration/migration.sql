@@ -35,7 +35,7 @@ CREATE TABLE "TimeEntry" (
     "userId" TEXT NOT NULL,
     "projectId" TEXT,
     "date" TIMESTAMP(3) NOT NULL,
-    "startTime" TIMESTAMP(3) NOT NULL,
+    "startDateTime" TIMESTAMP(3) NOT NULL,
     "endTime" TIMESTAMP(3),
     "workspace" "WorkspaceType" NOT NULL DEFAULT 'OFFICE',
     "description" TEXT,

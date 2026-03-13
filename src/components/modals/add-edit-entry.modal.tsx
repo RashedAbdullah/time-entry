@@ -63,7 +63,7 @@ export const AddEditEntryModal = ({
   const form = useForm<TimeEntryFormData>({
     resolver: zodResolver(timeEntrySchema),
     defaultValues: {
-      startTime: dateToTimeString(defaultValues?.startTime || "") || "",
+      startDateTime: dateToTimeString(defaultValues?.startDateTime || "") || "",
       endTime: dateToTimeString(defaultValues?.endTime || "") || "",
       description: defaultValues?.description || "",
       workspace: defaultValues?.workspace || "OFFICE",
@@ -103,7 +103,7 @@ export const AddEditEntryModal = ({
   useEffect(() => {
     if (open && defaultValues?.id) {
       form.reset({
-        startTime: dateToTimeString(defaultValues?.startTime || "") || "",
+        startDateTime: dateToTimeString(defaultValues?.startDateTime || "") || "",
         endTime: dateToTimeString(defaultValues?.endTime || "") || "",
         description: defaultValues?.description || "",
         workspace: defaultValues?.workspace || "OFFICE",
@@ -112,7 +112,7 @@ export const AddEditEntryModal = ({
       });
     } else if (open && !defaultValues?.id) {
       form.reset({
-        startTime: "",
+        startDateTime: "",
         endTime: "",
         description: "",
         workspace: "OFFICE",
@@ -144,7 +144,7 @@ export const AddEditEntryModal = ({
           >
             <FormField
               control={form.control}
-              name="startTime"
+              name="startDateTime"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Start Time</FormLabel>

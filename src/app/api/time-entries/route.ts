@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
           },
           adjustments: true,
         },
-        orderBy: { startTime: "desc" },
+        orderBy: { startDateTime: "desc" },
         skip,
         take: limit,
       }),
@@ -115,22 +115,22 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const { date, startTime, endTime, projectId, workspace, description } =
+    const { date, startDateTime, endTime, projectId, workspace, description } =
       body;
 
     /* -------------------------------
        Basic Validation
     -------------------------------- */
 
-    if (!date || !startTime) {
+    if (!date || !startDateTime) {
       return NextResponse.json(
-        { success: false, message: "Date and startTime are required" },
+        { success: false, message: "Date and startDateTime are required" },
         { status: 400 },
       );
     }
 
-    console.log("startTime ", startTime);
-    const parsedStart = timeStringToDate(startTime, normalizeDate(date));
+    console.log("startDateTime ", startDateTime);
+    const parsedStart = timeStringToDate(startDateTime, normalizeDate(date));
     console.log("parsedStart ", parsedStart);
     const parsedEnd = endTime
       ? timeStringToDate(endTime, normalizeDate(date))
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
 
     if (parsedEnd && parsedEnd <= parsedStart) {
       return NextResponse.json(
-        { success: false, message: "endTime must be greater than startTime" },
+        { success: false, message: "endTime must be greater than startDateTime" },
         { status: 400 },
       );
     }
@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         projectId: projectId || null,
         date: normalizeDate(date),
-        startTime: parsedStart,
+        startDateTime: parsedStart,
         endTime: parsedEnd,
         workspace: workspace || "OFFICE",
         description: description || null,
