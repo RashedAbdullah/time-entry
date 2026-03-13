@@ -1,16 +1,6 @@
 # TimeTracker - Smart Time Tracking for Professionals
 
-![TimeTracker Cover](https://timeentry.dirasah.org/cover-image.png)
-
-<p align="center">
-  <a href="#features">Features</a> •
-  <a href="#demo">Demo</a> •
-  <a href="#tech-stack">Tech Stack</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#api-routes">API Routes</a> •
-  <a href="#contributing">Contributing</a> •
-  <a href="#license">License</a>
-</p>
+<img src="./public/cover-image.png" alt="TimeTracker cover" width="100%" height="auto">
 
 <p align="center">
   <img src="https://img.shields.io/github/license/RashedAbdullah/time-entry" alt="License">
@@ -47,15 +37,6 @@ TimeTracker is a powerful, full-stack time tracking application built with Next.
 - **🔐 NextAuth.js Integration** - Secure authentication with multiple providers
 - **👤 User Isolation** - Each user sees only their own data
 - **🔒 Protected Routes** - Authentication required for all tracking features
-
-## 🎯 Demo
-
-[Live Demo](https://timeentry.dirasah.org)
-
-Demo Credentials:
-
-- Email: demo@timetracker.com
-- Password: demo123
 
 ## 🛠️ Tech Stack
 
@@ -444,7 +425,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-  Made with ❤️ by the Rashed Abdullah
+  Made with ❤️ by Rashed Abdullah
   <br>
   <a href="https://rashedabdullah.com">rashedabdullah.com</a>
 </p>
