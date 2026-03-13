@@ -105,8 +105,8 @@ export async function GET(req: NextRequest) {
 
     // Add data
     entries.forEach((entry) => {
-      const start = new Date(entry?.startDateTime);
-      const end = entry?.endTime ? new Date(entry.endTime) : null;
+      const start = new Date(entry.startDateTime);
+      const end = entry.endTime ? new Date(entry.endTime) : null;
 
       let duration = "";
       let durationMinutes = 0;

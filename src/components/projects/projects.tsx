@@ -43,14 +43,6 @@ const Projects = () => {
     );
   }
 
-  if (projects?.length === 0) {
-    return (
-      <div className="h-96 flex items-center justify-center text-muted-foreground">
-        No projects found
-      </div>
-    );
-  }
-
   const handleCreateProject = () => {
     setSelectedProject(null);
     setShowProjectModal(true);
@@ -98,54 +90,60 @@ const Projects = () => {
         </CardAction>
       </CardHeader>
       <div className="min-h-96">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Project</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Time Entries</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {projects?.map((project: any) => (
-              <TableRow key={project.id}>
-                <TableCell>{project.name}</TableCell>
-                <TableCell>{project.type}</TableCell>
-                <TableCell>
-                  <span className="font-bold text-primary">
-                    {formatDuration(
-                      calculateTotalDuration(project?.timeEntries),
-                    )}
-                  </span>{" "}
-                  <span className="text-xs text-muted-foreground">
-                    (Total Entries: {project.timeEntries?.length})
-                  </span>
-                </TableCell>
-                <TableCell>{project?.description}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditProject(project)}
-                    >
-                      <PenSquare className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDeleteProject(project)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        {projects?.length === 0 ? (
+          <div className="h-96 flex items-center justify-center text-muted-foreground">
+            No projects found
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Project</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Time Entries</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {projects?.map((project: any) => (
+                <TableRow key={project.id}>
+                  <TableCell>{project.name}</TableCell>
+                  <TableCell>{project.type}</TableCell>
+                  <TableCell>
+                    <span className="font-bold text-primary">
+                      {formatDuration(
+                        calculateTotalDuration(project?.timeEntries),
+                      )}
+                    </span>{" "}
+                    <span className="text-xs text-muted-foreground">
+                      (Total Entries: {project.timeEntries?.length})
+                    </span>
+                  </TableCell>
+                  <TableCell>{project?.description}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditProject(project)}
+                      >
+                        <PenSquare className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDeleteProject(project)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </>
   );
