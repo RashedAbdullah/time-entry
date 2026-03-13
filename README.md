@@ -1,8 +1,8 @@
 # TimeTracker - Smart Time Tracking for Professionals
 
-<img src="https://timeentry.dirasah.org/logo.jpg" alt="TimeTracker logo" width="200" height="165">
+<img src="./logo.jpg" alt="TimeTracker logo" width="200" height="165">
 <br>
-<img src="https://timeentry.dirasah.org/cover-image.png" alt="TimeTracker cover" width="100%" height="auto">
+<img src="./cover-image.png" alt="TimeTracker cover" width="100%" height="auto">
 
 <p align="center">
   <img src="https://img.shields.io/github/license/RashedAbdullah/time-entry" alt="License">
@@ -427,7 +427,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <p align="center">
-  Made with ❤️ by the Rashed Abdullah
+  Made with ❤️ by Rashed Abdullah
   <br>
   <a href="https://rashedabdullah.com">rashedabdullah.com</a>
 </p>
