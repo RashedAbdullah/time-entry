@@ -1,8 +1,8 @@
 # TimeTracker - Smart Time Tracking for Professionals
 
-<img src="./logo.jpg" alt="TimeTracker logo" width="200" height="165">
+<img src="./public/logo.jpg" alt="TimeTracker logo" width="200" height="165">
 <br>
-<img src="./cover-image.png" alt="TimeTracker cover" width="100%" height="auto">
+<img src="./public/cover-image.png" alt="TimeTracker cover" width="100%" height="auto">
 
 <p align="center">
   <img src="https://img.shields.io/github/license/RashedAbdullah/time-entry" alt="License">
