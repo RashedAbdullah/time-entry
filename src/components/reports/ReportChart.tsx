@@ -95,10 +95,10 @@ export function ReportChart({ data }: ReportChartProps) {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={(entry) => `${entry.name}: ${entry.value}h`}
+                label={(entry) => `${entry.name}: ${entry.hours}h`}
                 outerRadius={100}
                 fill="#8884d8"
-                dataKey="value"
+                dataKey="hours"
               >
                 {data.map((entry, index) => (
                   <Cell

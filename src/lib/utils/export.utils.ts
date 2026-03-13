@@ -15,7 +15,9 @@ export async function exportToPDF(data: any[], fileName: string) {
     );
 
     if (!response.ok) {
-      throw new Error("Failed to export PDF");
+      const errorText = await response.text();
+      console.error("PDF Export Backend Error:", response.status, response.statusText, errorText);
+      throw new Error(`Failed to export PDF: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
     const blob = await response.blob();

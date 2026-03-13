@@ -218,9 +218,9 @@ export function SignUpForm() {
         </Button>
       </form>
 
-      <AuthDivider />
+      {/* <AuthDivider /> */}
 
-      <SocialAuthButtons isLoading={isLoading} />
+      {/* <SocialAuthButtons isLoading={isLoading} /> */}
 
       <p className="text-center text-sm text-muted-foreground mt-6">
         Already have an account?{" "}

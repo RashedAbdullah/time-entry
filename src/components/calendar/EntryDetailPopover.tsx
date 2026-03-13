@@ -11,12 +11,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProjectBadge } from "@/components/projects/ProjectBadge";
 import { WorkspaceIcon } from "@/components/ui/WorkspaceIcon";
 import { DurationBadge } from "@/components/ui/DurationBadge";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, Clock } from "lucide-react";
 import { useState } from "react";
 import { AddEditEntryModal } from "../modals/add-edit-entry.modal";
 import { api } from "@/lib/api/time-entries";
 import { useConfirmDialog } from "@/hooks/confirm-dialog-provider";
 import { toast } from "sonner";
+import { TimeAdjustmentModal } from "@/components/time-entry/TimeAdjustmentModal";
 
 interface EntryDetailPopoverProps {
   date: Date;
@@ -35,6 +36,8 @@ export function EntryDetailPopover({
 }: EntryDetailPopoverProps) {
   const [openModal, setOpenModal] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<any>(null);
+  const [openAdjustmentModal, setOpenAdjustmentModal] = useState(false);
+  const [adjustmentEntryId, setAdjustmentEntryId] = useState<any>(null);
 
   const totalDuration = entries.reduce((total, entry) => {
     if (entry.endTime) {
@@ -72,6 +75,12 @@ export function EntryDetailPopover({
     }
   };
 
+  const handleAdjustTime = (id: any) => {
+    setAdjustmentEntryId(id);
+    onOpenChange(false);
+    setOpenAdjustmentModal(true);
+  };
+
   return (
     <>
       <AddEditEntryModal
@@ -85,6 +94,19 @@ export function EntryDetailPopover({
           api.getEntries();
         }}
       />
+      {adjustmentEntryId && (
+        <TimeAdjustmentModal
+          open={openAdjustmentModal}
+          onOpenChange={(isOpen) => {
+            setOpenAdjustmentModal(isOpen);
+            if (!isOpen) {
+              setAdjustmentEntryId(null);
+              api.getEntries();
+            }
+          }}
+          entryId={adjustmentEntryId}
+        />
+      )}
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>{children}</PopoverTrigger>
         <PopoverContent className="w-80 p-0" align="start">
@@ -162,10 +184,32 @@ export function EntryDetailPopover({
                               />
                             </>
                           )}
+
+                          {entry.adjustments?.length > 0 && (
+                            <span className="text-xs text-muted-foreground ml-2">
+                              (Adjusted:{" "}
+                              {entry.adjustments.reduce(
+                                (acc: number, adj: any) => acc + adj.minutes,
+                                0,
+                              )}{" "}
+                              min)
+                            </span>
+                          )}
                         </div>
                       </div>
 
                       <Button
+                        title="Adjust Time"
+                        size="icon"
+                        variant="ghost"
+                        className="opacity-0 group-hover:opacity-100 h-8 w-8"
+                        onClick={() => handleAdjustTime(entry?.id)}
+                      >
+                        <Clock className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        title="Edit Entry"
                         size="icon"
                         variant="ghost"
                         className="opacity-0 group-hover:opacity-100 h-8 w-8"
@@ -175,6 +219,7 @@ export function EntryDetailPopover({
                       </Button>
 
                       <Button
+                        title="Delete Entry"
                         size="icon"
                         variant="destructive"
                         className="opacity-0 group-hover:opacity-100 h-8 w-8"

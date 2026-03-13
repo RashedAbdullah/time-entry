@@ -107,26 +107,34 @@ export async function GET(req: NextRequest) {
       y += itemHeight;
     });
 
-    // Finalize PDF
+    // Finalize PDF using Web Streams API
+    const stream = new ReadableStream({
+      start(controller) {
+        doc.on("data", (chunk) => {
+          controller.enqueue(new Uint8Array(chunk));
+        });
+        doc.on("end", () => {
+          controller.close();
+        });
+        doc.on("error", (err) => {
+          console.error("PDF generation stream error:", err);
+          controller.error(err);
+        });
+      },
+    });
+
     doc.end();
 
-    return new Promise((resolve) => {
-      doc.on("end", () => {
-        const pdfBuffer = Buffer.concat(chunks);
-        resolve(
-          new NextResponse(pdfBuffer, {
-            headers: {
-              "Content-Type": "application/pdf",
-              "Content-Disposition": `attachment; filename="time-report-${format(new Date(), "yyyy-MM-dd")}.pdf"`,
-            },
-          }),
-        );
-      });
+    return new NextResponse(stream as any, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="time-report-${format(new Date(), "yyyy-MM-dd")}.pdf"`,
+      },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("PDF export error:", error);
     return NextResponse.json(
-      { error: "Failed to generate PDF" },
+      { error: "Failed to generate PDF", details: error.message, stack: error.stack },
       { status: 500 },
     );
   }

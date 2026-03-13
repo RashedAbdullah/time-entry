@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { startOfMonth, endOfMonth } from "date-fns";
 import { MonthlySummary } from "./MonthlySummary";
 import { ReportFilters } from "./ReportFilters";
 import { ExportButtons } from "./ExportButtons";
@@ -11,44 +12,56 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, BarChart3, Table2 } from "lucide-react";
 
-interface ReportFilters {
-  dateRange: "today" | "week" | "month" | "custom";
-  startDate?: Date;
-  endDate?: Date;
+export interface ReportFiltersState {
+  startDate: Date;
+  endDate: Date;
   projectId?: string;
   workspace?: "OFFICE" | "HOME" | "ALL";
 }
 
-const Reports = () => {
+const Insights = () => {
   const { data: session } = useSession();
-  const [filters, setFilters] = useState<ReportFilters>({
-    dateRange: "month",
+  const [filters, setFilters] = useState<ReportFiltersState>({
+    startDate: startOfMonth(new Date()),
+    endDate: endOfMonth(new Date()),
     workspace: "ALL",
   });
   const [reportData, setReportData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchReportData = async () => {
-    setIsLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (filters.startDate)
-        params.append("startDate", filters.startDate.toISOString());
-      if (filters.endDate)
-        params.append("endDate", filters.endDate.toISOString());
-      if (filters.projectId) params.append("projectId", filters.projectId);
-      if (filters.workspace && filters.workspace !== "ALL")
-        params.append("workspace", filters.workspace);
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.startDate)
+      params.append("startDate", filters.startDate.toISOString());
+    if (filters.endDate)
+      params.append("endDate", filters.endDate.toISOString());
+    if (filters.projectId) params.append("projectId", filters.projectId);
+    if (filters.workspace && filters.workspace !== "ALL")
+      params.append("workspace", filters.workspace);
 
-      const response = await fetch(`/api/reports?${params.toString()}`);
-      const data = await response.json();
-      setReportData(data);
-    } catch (error) {
-      console.error("Failed to fetch report data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const controller = new AbortController();
+
+    const fetchReportData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/reports?${params.toString()}`, {
+          signal: controller.signal,
+        });
+        const data = await response.json();
+        setReportData(data);
+      } catch (error: any) {
+        if (error.name === "AbortError") return;
+        console.error("Failed to fetch report data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReportData();
+
+    return () => controller.abort();
+  }, [filters]);
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* Header */}
@@ -69,8 +82,8 @@ const Reports = () => {
 
       {/* Filters */}
       <ReportFilters
+        filters={filters}
         onFilterChange={setFilters}
-        onApply={fetchReportData}
         isLoading={isLoading}
       />
 
@@ -167,13 +180,6 @@ const Reports = () => {
                   <ReportChart data={reportData.chartData} />
                 </CardContent>
               </Card>
-
-              {/* Projects Breakdown
-              <MonthlySummary
-                year={new Date().getFullYear()}
-                month={new Date().getMonth() + 1}
-                data={reportData}
-              /> */}
             </>
           )}
 
@@ -307,4 +313,4 @@ const Reports = () => {
   );
 };
 
-export default Reports;
+export default Insights;

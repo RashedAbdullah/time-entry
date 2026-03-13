@@ -38,7 +38,11 @@ export function MonthView() {
     return acc;
   }, {});
 
-  const totalDuration = calculateTotalDuration(entries);
+  const currentMonthEntries = entries?.filter((entry: any) =>
+    isSameMonth(new Date(entry.date), currentMonth)
+  ) || [];
+
+  const totalDuration = calculateTotalDuration(currentMonthEntries);
 
   return (
     <div>
@@ -48,10 +52,20 @@ export function MonthView() {
           {format(currentMonth, "MMMM yyyy")} - {formatDuration(totalDuration)}
         </h2>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={prevMonth}>
+          <Button
+            title="Previous Month"
+            variant="outline"
+            size="icon"
+            onClick={prevMonth}
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={nextMonth}>
+          <Button
+            title="Next Month"
+            variant="outline"
+            size="icon"
+            onClick={nextMonth}
+          >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

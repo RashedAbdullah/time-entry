@@ -10,15 +10,21 @@ export function useTimeEntries() {
   const {
     data: todayEntries,
     error,
-    mutate,
+    mutate: mutateToday,
   } = useSWR(`/api/time-entries?date=${today}`, api.getTodayEntries);
 
-  const { data: entries } = useSWR(`/api/time-entries`, api.getEntries);
+  const { data: entries, mutate: mutateAll } = useSWR(`/api/time-entries`, api.getEntries);
 
-  const { data: activeEntry } = useSWR(
+  const { data: activeEntry, mutate: mutateActive } = useSWR(
     "/api/time-entries/active",
     api.getActiveEntry,
   );
+
+  const mutate = () => {
+    mutateToday();
+    mutateAll();
+    mutateActive();
+  };
 
   const createEntry = async (data: any) => {
     setIsLoading(true);

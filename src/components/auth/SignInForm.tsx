@@ -136,9 +136,9 @@ export function SignInForm() {
         </Button>
       </form>
 
-      <AuthDivider />
+      {/* <AuthDivider /> */}
 
-      <SocialAuthButtons isLoading={isLoading} />
+      {/* <SocialAuthButtons isLoading={isLoading} /> */}
 
       <p className="text-center text-sm text-muted-foreground mt-6">
         Don't have an account?{" "}

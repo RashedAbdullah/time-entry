@@ -8,7 +8,7 @@ import { TimeEntryForm } from "@/components/time-entry/TimeEntryForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import Projects from "../projects/projects";
-import Reports from "../reports/reports";
+import Insights from "../reports/insights";
 import { BarChart3, CalendarDays, FolderOpen, Sun } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 
@@ -48,7 +48,7 @@ export function DashboardContainer() {
             Projects
           </TabsTrigger>
           <TabsTrigger
-            value="reports"
+            value="insights"
             className="gap-2 rounded-lg px-4 text-sm font-medium data-[state=active]:bg-card data-[state=active]:shadow-card data-[state=active]:text-foreground transition-all duration-200"
           >
             <BarChart3 />
@@ -85,9 +85,9 @@ export function DashboardContainer() {
         </AnimatePresence>
 
         <AnimatePresence mode="wait">
-          <TabsContent value="reports" className="animate-fade-in">
+          <TabsContent value="insights" className="animate-fade-in">
             <Card className="p-4">
-              <Reports />
+              <Insights />
             </Card>
           </TabsContent>
         </AnimatePresence>
