@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     doc.moveDown();
 
     // Summary
-    const totalMinutes = entries.reduce((sum, e) => {
+    const totalMinutes = entries.reduce((sum: number, e) => {
       if (e.endTime) {
         return (
           sum + (e.endTime.getTime() - e.startTime.getTime()) / (1000 * 60)
