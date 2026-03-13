@@ -63,8 +63,8 @@ export async function GET(req: NextRequest) {
 
     // Process entries for response
     const processedEntries = entries.map((entry) => {
-      const start = new Date(entry.startTime);
-      const end = entry.endTime ? new Date(entry.endTime) : null;
+      const start = new Date(entry?.startTime);
+      const end = entry?.endTime ? new Date(entry.endTime) : null;
 
       // Calculate duration including adjustments
       let durationMs = end ? end.getTime() - start.getTime() : 0;
