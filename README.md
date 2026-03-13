@@ -1,7 +1,5 @@
 # TimeTracker - Smart Time Tracking for Professionals
 
-<img src="./public/logo.jpg" alt="TimeTracker logo" width="200" height="165">
-<br>
 <img src="./public/cover-image.png" alt="TimeTracker cover" width="100%" height="auto">
 
 <p align="center">
