@@ -2,7 +2,7 @@ import * as z from "zod";
 
 export const timeEntrySchema = z
   .object({
-    startTime: z.string().min(1, "Start time is required"),
+    startDateTime: z.string().min(1, "Start time is required"),
     endTime: z.string().optional(),
     projectId: z.string().optional(),
     description: z
@@ -14,8 +14,8 @@ export const timeEntrySchema = z
   })
   .refine(
     (data) => {
-      if (data.startTime && data.endTime) {
-        return data.endTime > data.startTime;
+      if (data.startDateTime && data.endTime) {
+        return data.endTime > data.startDateTime;
       }
       return true;
     },
@@ -58,7 +58,7 @@ export const bulkTimeEntrySchema = z
         projectId: z.string().optional(),
         description: z.string().max(500).optional(),
         workspace: z.enum(["OFFICE", "HOME"]),
-        startTime: z.string(), // HH:mm format
+        startDateTime: z.string(), // HH:mm format
         endTime: z.string().optional(), // HH:mm format
       }),
     ),
@@ -66,8 +66,8 @@ export const bulkTimeEntrySchema = z
   .refine(
     (data) => {
       return data.entries.every((entry) => {
-        if (entry.startTime && entry.endTime) {
-          const start = entry.startTime.split(":").map(Number);
+        if (entry.startDateTime && entry.endTime) {
+          const start = entry.startDateTime.split(":").map(Number);
           const end = entry.endTime.split(":").map(Number);
           const startMinutes = start[0] * 60 + start[1];
           const endMinutes = end[0] * 60 + end[1];

@@ -48,7 +48,7 @@ export function calculateTotalDuration(entries: any[]): number {
       return (
         total +
         (new Date(entry.endTime).getTime() -
-          new Date(entry.startTime).getTime())
+          new Date(entry.startDateTime).getTime())
       );
     }
     return total;
@@ -89,7 +89,7 @@ export function groupEntriesByProject(entries: any[]): Record<string, any[]> {
     acc[projectId].entries.push(entry);
     if (entry.endTime) {
       acc[projectId].totalDuration +=
-        new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime();
+        new Date(entry.endTime).getTime() - new Date(entry.startDateTime).getTime();
     }
     return acc;
   }, {});

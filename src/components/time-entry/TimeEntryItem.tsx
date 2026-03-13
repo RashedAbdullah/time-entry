@@ -30,8 +30,8 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
   const { deleteEntry } = useTimeEntries();
 
   const duration = entry.endTime
-    ? new Date(entry.endTime).getTime() - new Date(entry.startTime).getTime()
-    : Date.now() - new Date(entry.startTime).getTime();
+    ? new Date(entry.endTime).getTime() - new Date(entry.startDateTime).getTime()
+    : Date.now() - new Date(entry.startDateTime).getTime();
 
   const confirm = useConfirmDialog();
 
@@ -68,7 +68,7 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
               {entry.project && <ProjectBadge project={entry.project} />}
               <WorkspaceIcon type={entry.workspace} />
               <span className="text-xs text-muted-foreground">
-                {format(new Date(entry.startTime), "hh:mm a")}
+                {format(new Date(entry.startDateTime), "hh:mm a")}
                 {entry.endTime &&
                   ` - ${format(new Date(entry.endTime), "hh:mm a")}`}
               </span>

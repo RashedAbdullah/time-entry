@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
 
     // Process entries for response
     const processedEntries = entries.map((entry) => {
-      const start = new Date(entry.startTime);
+      const start = new Date(entry.startDateTime);
       const end = entry.endTime ? new Date(entry.endTime) : null;
 
       // Calculate duration including adjustments
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
       return {
         id: entry.id,
         date: format(new Date(entry.date), "yyyy-MM-dd"),
-        startTime: format(start, "HH:mm"),
+        startDateTime: format(start, "HH:mm"),
         endTime: end ? format(end, "HH:mm") : null,
         duration: formatDuration(durationMs),
         durationHours: Number(durationHours.toFixed(2)),

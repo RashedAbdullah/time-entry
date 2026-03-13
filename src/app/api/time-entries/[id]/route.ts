@@ -83,7 +83,7 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const { startTime, endTime, projectId, workspace, description, date } =
+    const { startDateTime, endTime, projectId, workspace, description, date } =
       body;
 
     /* ---------------------------------
@@ -108,15 +108,15 @@ export async function PATCH(
        Validate Time Logic
     ---------------------------------- */
 
-    let parsedStart = existingEntry.startTime;
+    let parsedStart = existingEntry.startDateTime;
     let parsedEnd = existingEntry.endTime;
 
-    if (startTime) parsedStart = timeStringToDate(startTime, normalizeDate(date));
+    if (startDateTime) parsedStart = timeStringToDate(startDateTime, normalizeDate(date));
     if (endTime) parsedEnd = timeStringToDate(endTime, normalizeDate(date));
 
     if (parsedEnd && parsedEnd <= parsedStart) {
       return NextResponse.json(
-        { success: false, message: "endTime must be greater than startTime" },
+        { success: false, message: "endTime must be greater than startDateTime" },
         { status: 400 },
       );
     }
@@ -144,7 +144,7 @@ export async function PATCH(
     const updated = await prisma.timeEntry.update({
       where: { id },
       data: {
-        startTime: parsedStart,
+        startDateTime: parsedStart,
         endTime: parsedEnd,
         projectId: projectId ?? existingEntry.projectId,
         workspace: workspace ?? existingEntry.workspace,

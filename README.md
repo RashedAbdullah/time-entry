@@ -236,7 +236,7 @@ model TimeEntry {
   userId      String
   projectId   String?
   date        DateTime // Entry date (normalized to 00:00:00)
-  startTime   DateTime
+  startDateTime   DateTime
   endTime     DateTime?
   workspace   WorkspaceType @default(OFFICE)
   description String?
