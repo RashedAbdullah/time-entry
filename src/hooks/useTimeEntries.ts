@@ -15,22 +15,19 @@ export function useTimeEntries() {
 
   const { data: entries, mutate: mutateAll } = useSWR(`/api/time-entries`, api.getEntries);
 
-  const { data: activeEntry, mutate: mutateActive } = useSWR(
-    "/api/time-entries/active",
-    api.getActiveEntry,
-  );
+
 
   const mutate = () => {
     mutateToday();
     mutateAll();
-    mutateActive();
   };
 
   const createEntry = async (data: any) => {
     setIsLoading(true);
     try {
-      await api.createEntry(data);
+      const result = await api.createEntry(data);
       mutate();
+      return result;
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +69,6 @@ export function useTimeEntries() {
 
   return {
     todayEntries: todayEntries?.data,
-    activeEntry,
     isLoading,
     error,
     createEntry,

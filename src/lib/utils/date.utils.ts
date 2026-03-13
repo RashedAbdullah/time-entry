@@ -1,4 +1,3 @@
-// src/lib/utils/date.utils.ts
 import {
   format,
   startOfWeek,
@@ -66,8 +65,8 @@ export const DateUtils = {
   },
 
   // Month name
-  getMonthName: (date: Date, format: "long" | "short" = "long") =>
-    format(date, format === "long" ? "MMMM" : "MMM"),
+  getMonthName: (date: Date, monthFormat: "long" | "short" = "long") =>
+    format(date, monthFormat === "long" ? "MMMM" : "MMM"),
 
   // Year
   getYear: (date: Date) => date.getFullYear(),

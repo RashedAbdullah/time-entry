@@ -67,7 +67,7 @@ export const AddEditEntryModal = ({
       endTime: dateToTimeString(defaultValues?.endTime || "") || "",
       description: defaultValues?.description || "",
       workspace: defaultValues?.workspace || "OFFICE",
-      date: new Date(defaultValues?.date) || date,
+      date: defaultValues?.date ? new Date(defaultValues.date) : date,
       projectId: defaultValues?.projectId || "",
     },
   });
@@ -89,7 +89,7 @@ export const AddEditEntryModal = ({
           date: format(data.date, "yyyy-MM-dd"),
           projectId: data.projectId || null,
         });
-        onSuccess?.(entry?.id);
+        onSuccess?.(entry?.data?.id);
         toast.success("Time entry created successfully");
       }
 
@@ -107,7 +107,7 @@ export const AddEditEntryModal = ({
         endTime: dateToTimeString(defaultValues?.endTime || "") || "",
         description: defaultValues?.description || "",
         workspace: defaultValues?.workspace || "OFFICE",
-        date: new Date(defaultValues?.date) || date,
+        date: defaultValues?.date ? new Date(defaultValues.date) : date,
         projectId: defaultValues?.projectId || "",
       });
     } else if (open && !defaultValues?.id) {

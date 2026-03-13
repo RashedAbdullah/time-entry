@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/yourusername/timetracker" alt="License">
-  <img src="https://img.shields.io/github/stars/yourusername/timetracker" alt="Stars">
-  <img src="https://img.shields.io/github/issues/yourusername/timetracker" alt="Issues">
-  <img src="https://img.shields.io/github/contributors/yourusername/timetracker" alt="Contributors">
+  <img src="https://img.shields.io/github/license/RashedAbdullah/time-entry" alt="License">
+  <img src="https://img.shields.io/github/stars/RashedAbdullah/time-entry" alt="Stars">
+  <img src="https://img.shields.io/github/issues/RashedAbdullah/time-entry" alt="Issues">
+  <img src="https://img.shields.io/github/contributors/RashedAbdullah/time-entry" alt="Contributors">
 </p>
 
 TimeTracker is a powerful, full-stack time tracking application built with Next.js that helps professionals, freelancers, and teams visualize their work hours, analyze productivity, and generate comprehensive reports. Track time across projects, monitor daily activity, and export data in multiple formats.
@@ -24,7 +24,7 @@ TimeTracker is a powerful, full-stack time tracking application built with Next.
 ## ✨ Features
 
 ### Core Functionality
-- **⏱️ Real-time Timer** - Start/stop timers with live duration updates
+- **⏱️ Real-time Timer** - Start/stop timers with live duration updates (upcoming feature)
 - **📊 Interactive Dashboard** - Overview of today's activity, active timers, and quick actions
 - **📅 Calendar View** - Visual representation of time entries with daily breakdowns
 - **📈 Advanced Analytics** - Charts and graphs to visualize work patterns
@@ -35,9 +35,8 @@ TimeTracker is a powerful, full-stack time tracking application built with Next.
 
 ### User Experience
 - **🎨 Modern UI** - Clean, professional interface with shadcn/ui components
-- **🌓 Dark Mode** - Seamless light/dark theme switching
+- **🌓 Dark Mode** - Seamless light/dark theme switching (upcoming feature)
 - **📱 Responsive Design** - Works perfectly on desktop, tablet, and mobile
-- **⚡ Real-time Updates** - Instant feedback with SWR caching
 - **🔍 Advanced Filtering** - Filter reports by date, project, workspace
 - **📊 Visual Analytics** - Bar, line, and pie charts for data visualization
 
@@ -298,7 +297,7 @@ enum ProjectType {
 ### Time Entries
 - `GET /api/time-entries` - Get time entries (with filters)
 - `POST /api/time-entries` - Create time entry
-- `GET /api/time-entries/today` - Get today's entries
+- `GET /api/time-entries/:date` - Get today's entries
 - `GET /api/time-entries/active` - Get active timer
 - `POST /api/time-entries/start` - Start timer
 - `POST /api/time-entries/stop` - Stop timer

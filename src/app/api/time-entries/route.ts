@@ -17,10 +17,7 @@ function getMonthRange(month: string) {
    GET /api/time-entries
 ========================================== */
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 

@@ -36,7 +36,7 @@ import { useEffect } from "react";
 const projectSchema = z.object({
   name: z.string().min(1, "Project name is required").max(50),
   description: z.string().max(200).optional(),
-  type: z.enum(["PERSONAL", "OFFICE", "CLIENT"]).default("OFFICE"),
+  type: z.enum(["PERSONAL", "OFFICE", "CLIENT"]),
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;

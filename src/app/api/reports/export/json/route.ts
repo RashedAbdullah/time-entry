@@ -33,6 +33,26 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    // Calculate statistics
+    const projectStats = entries.reduce((acc: any, entry) => {
+      if (entry.project) {
+        if (!acc[entry.project.id]) {
+          acc[entry.project.id] = {
+            projectId: entry.project.id,
+            projectName: entry.project.name,
+            totalDuration: 0,
+            entryCount: 0,
+          };
+        }
+        if (entry.endTime) {
+          acc[entry.project.id].totalDuration +=
+            entry.endTime.getTime() - entry.startTime.getTime();
+        }
+        acc[entry.project.id].entryCount++;
+      }
+      return acc;
+    }, {});
+
     // Format data for export
     const exportData = {
       metadata: {
@@ -81,30 +101,9 @@ export async function GET(req: NextRequest) {
         createdAt: entry.createdAt,
         updatedAt: entry.updatedAt,
       })),
-    };
-
-    // Calculate statistics
-    const projectStats = entries.reduce((acc: any, entry) => {
-      if (entry.project) {
-        if (!acc[entry.project.id]) {
-          acc[entry.project.id] = {
-            projectId: entry.project.id,
-            projectName: entry.project.name,
-            totalDuration: 0,
-            entryCount: 0,
-          };
-        }
-        if (entry.endTime) {
-          acc[entry.project.id].totalDuration +=
-            entry.endTime.getTime() - entry.startTime.getTime();
-        }
-        acc[entry.project.id].entryCount++;
-      }
-      return acc;
-    }, {});
-
-    exportData.statistics = {
-      byProject: Object.values(projectStats),
+      statistics: {
+        byProject: Object.values(projectStats),
+      },
     };
 
     return new NextResponse(JSON.stringify(exportData, null, 2), {

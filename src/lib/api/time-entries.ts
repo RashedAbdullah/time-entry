@@ -9,12 +9,6 @@ export const api = {
     return res.json();
   },
 
-  async getActiveEntry() {
-    const res = await fetch(`${API_BASE}/time-entries/active`);
-    if (!res.ok) throw new Error("Failed to fetch active entry");
-    return res.json();
-  },
-
   async createEntry(data: any) {
     const res = await fetch(`${API_BASE}/time-entries`, {
       method: "POST",

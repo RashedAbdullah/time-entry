@@ -9,12 +9,8 @@ export const timeEntrySchema = z
       .string()
       .max(500, "Description must be less than 500 characters")
       .optional(),
-    workspace: z.enum(["OFFICE", "HOME"], {
-      required_error: "Please select a workspace",
-    }),
-    date: z.date({
-      required_error: "Date is required",
-    }),
+    workspace: z.enum(["OFFICE", "HOME"]),
+    date: z.date(),
   })
   .refine(
     (data) => {
