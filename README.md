@@ -1,6 +1,6 @@
 # TimeTracker - Smart Time Tracking for Professionals
 
-![TimeTracker Cover](/cover-image.png)
+![TimeTracker Cover](https://timeentry.dirasah.org/cover-image.png)
 
 <p align="center">
   <a href="#features">Features</a> •
@@ -24,6 +24,7 @@ TimeTracker is a powerful, full-stack time tracking application built with Next.
 ## ✨ Features
 
 ### Core Functionality
+
 - **⏱️ Real-time Timer** - Start/stop timers with live duration updates (upcoming feature)
 - **📊 Interactive Dashboard** - Overview of today's activity, active timers, and quick actions
 - **📅 Calendar View** - Visual representation of time entries with daily breakdowns
@@ -34,6 +35,7 @@ TimeTracker is a powerful, full-stack time tracking application built with Next.
 - **⚡ Time Adjustments** - Add or subtract time with reason tracking
 
 ### User Experience
+
 - **🎨 Modern UI** - Clean, professional interface with shadcn/ui components
 - **🌓 Dark Mode** - Seamless light/dark theme switching (upcoming feature)
 - **📱 Responsive Design** - Works perfectly on desktop, tablet, and mobile
@@ -41,21 +43,24 @@ TimeTracker is a powerful, full-stack time tracking application built with Next.
 - **📊 Visual Analytics** - Bar, line, and pie charts for data visualization
 
 ### Security & Authentication
+
 - **🔐 NextAuth.js Integration** - Secure authentication with multiple providers
 - **👤 User Isolation** - Each user sees only their own data
 - **🔒 Protected Routes** - Authentication required for all tracking features
 
 ## 🎯 Demo
 
-[Live Demo](https://timetracker-demo.vercel.app)
+[Live Demo](https://timeentry.dirasah.org)
 
 Demo Credentials:
+
 - Email: demo@timetracker.com
 - Password: demo123
 
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
@@ -66,6 +71,7 @@ Demo Credentials:
 - **Data Fetching**: [SWR](https://swr.vercel.app/)
 
 ### Backend
+
 - **API**: Next.js API Routes
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **ORM**: [Prisma](https://www.prisma.io/)
@@ -73,7 +79,8 @@ Demo Credentials:
 - **Validation**: [Zod](https://zod.dev/)
 
 ### DevOps & Tooling
-- **Package Manager**: [pnpm](https://pnpm.io/)
+
+- **Package Manager**: [npm](https://www.npmjs.com/)
 - **Code Quality**: ESLint, Prettier
 - **Git Hooks**: Husky
 - **Deployment**: Vercel
@@ -82,45 +89,47 @@ Demo Credentials:
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - PostgreSQL database
-- pnpm (recommended) or npm
+- npm
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/yourusername/timetracker.git
-   cd timetracker
+   git clone https://github.com/RashedAbdullah/time-entry.git
+   cd time-entry
    ```
 
 2. **Install dependencies**
+
    ```bash
-   pnpm install
+   npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
-   
+
    Fill in your environment variables (see [Environment Variables](#environment-variables) section)
 
 4. **Set up the database**
+
    ```bash
    # Run Prisma migrations
    npx prisma migrate dev --name init
-   
+
    # Generate Prisma client
    npx prisma generate
-   
-   # (Optional) Seed the database
-   npx prisma db seed
    ```
 
 5. **Run the development server**
+
    ```bash
-   pnpm dev
+   npm run dev
    ```
 
 6. **Open your browser**
@@ -128,7 +137,7 @@ Demo Credentials:
 
 ### Environment Variables
 
-Create a `.env.local` file with the following variables:
+Create a `.env` file with the following variables:
 
 ```env
 # Database
@@ -137,13 +146,6 @@ DATABASE_URL="postgresql://username:password@localhost:5432/timetracker"
 # NextAuth
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key-here"
-
-# OAuth Providers (optional)
-GITHUB_ID="your-github-client-id"
-GITHUB_SECRET="your-github-client-secret"
-
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
 ```
 
 ## 📁 Project Structure
@@ -156,9 +158,6 @@ timetracker/
 │   │   │   ├── signin/
 │   │   │   └── signup/
 │   │   ├── (dashboard)/        # Protected dashboard routes
-│   │   │   ├── projects/
-│   │   │   ├── reports/
-│   │   │   └── time-entries/
 │   │   └── api/                 # API routes
 │   │       ├── auth/
 │   │       ├── projects/
@@ -166,8 +165,10 @@ timetracker/
 │   │       └── time-entries/
 │   ├── components/              # React components
 │   │   ├── auth/
+│   │   ├── calendar/
 │   │   ├── dashboard/
 │   │   ├── layout/
+│   │   ├── modals/
 │   │   ├── projects/
 │   │   ├── reports/
 │   │   ├── time-entry/
@@ -175,13 +176,11 @@ timetracker/
 │   ├── hooks/                    # Custom React hooks
 │   ├── lib/                      # Utilities, configurations
 │   │   ├── api/
-│   │   ├── auth/
 │   │   ├── utils/
 │   │   └── validations/
 │   └── types/                    # TypeScript type definitions
 ├── prisma/
 │   ├── schema.prisma             # Database schema
-│   └── seed.ts                   # Seed data
 ├── public/                       # Static assets
 └── ...config files
 ```
@@ -197,15 +196,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
   id          String           @id @default(uuid())
   name        String
   email       String           @unique
-  password    String?
-  image       String?
+  password    String
   projects    Project[]
   timeEntries TimeEntry[]
   adjustments TimeAdjustment[]
@@ -221,8 +218,9 @@ model Project {
   description String?
   type        ProjectType @default(OFFICE)
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
   timeEntries TimeEntry[]
 
   createdAt DateTime @default(now())
@@ -232,36 +230,42 @@ model Project {
 }
 
 model TimeEntry {
-  id          String   @id @default(uuid())
-  userId      String
-  projectId   String?
-  date        DateTime // Entry date (normalized to 00:00:00)
-  startDateTime   DateTime
-  endTime     DateTime?
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectId String?
+
+  date DateTime // Entry date (normalized to 00:00:00)
+
+  startDateTime DateTime
+  endTime       DateTime?
+
   workspace   WorkspaceType @default(OFFICE)
   description String?
 
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  project     Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
   adjustments TimeAdjustment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
+  @@index([userId, date])
   @@index([projectId])
-  @@index([date])
 }
 
 model TimeAdjustment {
-  id          String   @id @default(uuid())
-  userId      String
-  timeEntryId String
-  minutes     Int      // Negative or positive
-  reason      String?
+  id String @id @default(uuid())
 
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  timeEntry TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+  timeEntryId String
+
+  minutes Int // Negative or positive
+  reason  String?
 
   createdAt DateTime @default(now())
 
@@ -284,10 +288,12 @@ enum ProjectType {
 ## 🔌 API Routes
 
 ### Authentication
+
 - `POST /api/auth/signup` - Register new user
 - `GET/POST /api/auth/[...nextauth]` - NextAuth authentication
 
 ### Projects
+
 - `GET /api/projects` - Get all projects for user
 - `POST /api/projects` - Create new project
 - `GET /api/projects/[id]` - Get project details
@@ -295,6 +301,7 @@ enum ProjectType {
 - `DELETE /api/projects/[id]` - Delete project
 
 ### Time Entries
+
 - `GET /api/time-entries` - Get time entries (with filters)
 - `POST /api/time-entries` - Create time entry
 - `GET /api/time-entries/:date` - Get today's entries
@@ -306,24 +313,12 @@ enum ProjectType {
 - `POST /api/time-entries/[id]/adjust` - Add time adjustment
 
 ### Reports
+
 - `GET /api/reports` - Generate report with filters
 - `GET /api/reports/export/pdf` - Export as PDF
 - `GET /api/reports/export/excel` - Export as Excel
 - `GET /api/reports/export/json` - Export as JSON
 - `GET /api/reports/monthly` - Get monthly summary
-
-## 🧪 Testing
-
-```bash
-# Run tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Run E2E tests
-pnpm test:e2e
-```
 
 ## 🤝 Contributing
 
@@ -332,66 +327,73 @@ We welcome contributions from the community! Whether it's bug fixes, new feature
 ### Contribution Guidelines
 
 #### 1. **Fork the Repository**
-   ```bash
-   git clone https://github.com/yourusername/timetracker.git
-   cd timetracker
-   ```
+
+```bash
+git clone https://github.com/RashedAbdullah/time-entry
+cd time-entry
+```
 
 #### 2. **Create a Branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   # or
-   git checkout -b fix/your-bug-fix
-   ```
+
+```bash
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/your-bug-fix
+```
 
 #### 3. **Set Up Development Environment**
-   - Follow the [Getting Started](#getting-started) guide
-   - Ensure all tests pass locally
-   - Maintain code quality with ESLint and Prettier
+
+- Follow the [Getting Started](#getting-started) guide
+- Ensure all tests pass locally
+- Maintain code quality with ESLint and Prettier
 
 #### 4. **Make Your Changes**
-   - Write clean, readable code
-   - Add comments where necessary
-   - Update documentation if needed
-   - Add tests for new features
+
+- Write clean, readable code
+- Add comments where necessary
+- Update documentation if needed
+- Add tests for new features
 
 #### 5. **Commit Guidelines**
-   We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-   ```
-   feat: add new feature
-   fix: resolve bug
-   docs: update documentation
-   style: formatting changes
-   refactor: code restructuring
-   test: add tests
-   chore: maintenance tasks
-   ```
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add new feature
+fix: resolve bug
+docs: update documentation
+style: formatting changes
+refactor: code restructuring
+test: add tests
+chore: maintenance tasks
+```
 
 #### 6. **Run Quality Checks**
-   ```bash
-   # Lint code
-   pnpm lint
-   
-   # Format code
-   pnpm format
-   
-   # Run tests
-   pnpm test
-   
-   # Type check
-   pnpm type-check
-   ```
+
+```bash
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Run tests
+npm run test
+
+# Type check
+npm run type-check
+```
 
 #### 7. **Submit a Pull Request**
-   - Push to your fork
-   - Open a PR to the `main` branch
-   - Describe your changes in detail
-   - Link any related issues
+
+- Push to your fork
+- Open a PR to the `main` branch
+- Describe your changes in detail
+- Link any related issues
 
 ### Development Workflow
 
-1. **Pick an Issue** - Look for [good first issues](https://github.com/yourusername/timetracker/labels/good%20first%20issue)
+1. **Pick an Issue** - Look for [good first issues](https://github.com/RashedAbdullah/time-entry/labels/good%20first%20issue)
 2. **Discuss** - Comment on the issue to let others know you're working on it
 3. **Code** - Follow the guidelines above
 4. **Review** - Wait for maintainers to review your PR
@@ -409,6 +411,7 @@ We welcome contributions from the community! Whether it's bug fixes, new feature
 ### Reporting Issues
 
 Found a bug? Please include:
+
 - Steps to reproduce
 - Expected behavior
 - Actual behavior
@@ -418,6 +421,7 @@ Found a bug? Please include:
 ### Feature Requests
 
 Have an idea? Open an issue with:
+
 - Clear description of the feature
 - Use case and benefits
 - Mockups or examples (if applicable)
@@ -431,21 +435,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [shadcn/ui](https://ui.shadcn.com/) for beautiful components
 - [Next.js](https://nextjs.org/) for the amazing framework
 - [Vercel](https://vercel.com/) for hosting
-- All our [contributors](https://github.com/yourusername/timetracker/graphs/contributors)
+- All our [contributors](https://github.com/RashedAbdullah/time-entry/graphs/contributors)
 
 ## 📞 Contact & Support
 
-- **Documentation**: [docs.timetracker.com](https://docs.timetracker.com)
-- **Discord**: [Join our community](https://discord.gg/timetracker)
-- **Twitter**: [@timetracker](https://twitter.com/timetracker)
-- **Email**: support@timetracker.com
+- **Email**: contact@rashedabdullah.com
 
 ---
 
 <p align="center">
-  Made with ❤️ by the TimeTracker Team
+  Made with ❤️ by the Rashed Abdullah
   <br>
-  <a href="https://github.com/yourusername/timetracker">GitHub</a> •
-  <a href="https://twitter.com/timetracker">Twitter</a> •
-  <a href="https://discord.gg/timetracker">Discord</a>
+  <a href="https://rashedabdullah.com">rashedabdullah.com</a>
 </p>
