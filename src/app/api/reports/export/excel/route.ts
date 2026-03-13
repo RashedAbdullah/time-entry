@@ -142,7 +142,7 @@ export async function GET(req: NextRequest) {
     // Projects summary sheet
     const projectsSheet = workbook.addWorksheet("Projects Summary");
 
-    const projectStats = entries.reduce((acc: any, entry) => {
+    const projectStats = entries.reduce((acc: any, entry: any) => {
       if (entry.project) {
         if (!acc[entry.project.id]) {
           acc[entry.project.id] = {

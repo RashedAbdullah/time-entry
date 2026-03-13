@@ -9,7 +9,7 @@
 //   useEffect(() => {
 //     if (activeEntry) {
 //       setIsRunning(true);
-//       const start = new Date(activeEntry.startTime).getTime();
+//       const start = new Date(activeEntry.startDateTime).getTime();
 //       const updateElapsed = () => {
 //         setElapsed(Date.now() - start);
 //       };

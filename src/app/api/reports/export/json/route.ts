@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Calculate statistics
-    const projectStats = entries.reduce((acc: any, entry) => {
+    const projectStats = entries.reduce((acc, entry) => {
       if (entry.project) {
         if (!acc[entry.project.id]) {
           acc[entry.project.id] = {
