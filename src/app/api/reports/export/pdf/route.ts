@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import PDFDocument from "pdfkit";
 import { format } from "date-fns";
+import { TimeEntry } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   try {
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
     doc.moveDown();
 
     // Summary
-    const totalMinutes = entries.reduce((sum: number, e) => {
+    const totalMinutes = entries.reduce((sum: number, e: TimeEntry) => {
       if (e.endTime) {
         return (
           sum + (e.endTime.getTime() - e.startTime.getTime()) / (1000 * 60)
