@@ -4,7 +4,6 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ExcelJS from "exceljs";
 import { format } from "date-fns";
-import { TimeEntry } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   try {
