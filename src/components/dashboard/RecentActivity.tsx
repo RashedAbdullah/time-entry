@@ -5,11 +5,20 @@ import { TimeEntryItem } from "@/components/time-entry/TimeEntryItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
+import { todayDateKey } from "@/lib/date-formatters";
 
-export function RecentActivity() {
-  const { todayEntries, isLoading, error } = useTimeEntries();
+interface RecentActivityProps {
+  date?: string;
+  isToday?: boolean;
+}
 
-  if (isLoading) {
+export function RecentActivity({
+  date = todayDateKey(),
+  isToday = true,
+}: RecentActivityProps) {
+  const { dayEntries, isLoading, error } = useTimeEntries(date);
+
+  if (isLoading && !dayEntries) {
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
@@ -28,10 +37,12 @@ export function RecentActivity() {
     );
   }
 
-  if (!todayEntries?.length) {
+  if (!dayEntries?.length) {
     return (
       <div className="text-center p-8 text-muted-foreground">
-        No entries for today. Start tracking your time!
+        {isToday
+          ? "No entries for today. Start tracking your time!"
+          : "No entries for this date."}
       </div>
     );
   }
@@ -39,7 +50,7 @@ export function RecentActivity() {
   return (
     <ScrollArea className="h-[400px] pr-4">
       <div className="space-y-3 overflow-y-auto">
-        {todayEntries.map((entry: any) => (
+        {dayEntries.map((entry: any) => (
           <TimeEntryItem key={entry.id} entry={entry} />
         ))}
       </div>

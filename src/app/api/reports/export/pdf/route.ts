@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import PDFDocument from "pdfkit";
 import { format } from "date-fns";
+import { dateKey, toDisplayDate } from "@/lib/date-formatters";
 
 export async function GET(req: NextRequest) {
   try {
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
 
     // Summary
     const totalMinutes = entries.reduce((sum: number, e) => {
-      if (e.endTime) {
+      if (e.endTime && !e.excluded) {
         return (
           sum + (e.endTime.getTime() - e.startDateTime.getTime()) / (1000 * 60)
         );
@@ -67,7 +68,7 @@ export async function GET(req: NextRequest) {
     doc.fontSize(10).text(`Total Entries: ${entries.length}`);
     doc.text(`Total Time: ${totalHours}h ${remainingMinutes}m`);
     doc.text(
-      `Days with Entries: ${new Set(entries.map((e) => format(new Date(e.date), "yyyy-MM-dd"))).size}`,
+      `Days with Entries: ${new Set(entries.map((e) => dateKey(e.date))).size}`,
     );
     doc.moveDown();
 
@@ -94,10 +95,10 @@ export async function GET(req: NextRequest) {
       }
 
       const duration = entry.endTime
-        ? `${Math.floor((entry.endTime.getTime() - entry.startDateTime.getTime()) / (1000 * 60))}m`
+        ? `${Math.floor((entry.endTime.getTime() - entry.startDateTime.getTime()) / (1000 * 60))}m${entry.excluded ? " (excluded)" : ""}`
         : "In progress";
 
-      doc.text(format(new Date(entry.date), "PP"), 50, y);
+      doc.text(format(toDisplayDate(entry.date), "PP"), 50, y);
       doc.text(entry.project?.name || "-", 150, y, { width: 140 });
       doc.text(entry.description?.substring(0, 30) || "-", 300, y, {
         width: 140,

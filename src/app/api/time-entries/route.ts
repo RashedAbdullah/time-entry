@@ -43,7 +43,6 @@ export async function GET(req: NextRequest) {
       userId: session.user.id,
     };
 
-    console.log("Log date ", date);
     // Filter by specific date
     if (date) {
       where.date = normalizeDate(date);
@@ -115,8 +114,15 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const { date, startDateTime, endTime, projectId, workspace, description } =
-      body;
+    const {
+      date,
+      startDateTime,
+      endTime,
+      projectId,
+      workspace,
+      description,
+      excluded,
+    } = body;
 
     /* -------------------------------
        Basic Validation
@@ -124,21 +130,22 @@ export async function POST(req: NextRequest) {
 
     if (!date || !startDateTime) {
       return NextResponse.json(
-        { success: false, message: "Date and startDateTime are required" },
+        { success: false, message: "Date and start time are required" },
         { status: 400 },
       );
     }
 
-    console.log("startDateTime ", startDateTime);
     const parsedStart = timeStringToDate(startDateTime, normalizeDate(date));
-    console.log("parsedStart ", parsedStart);
     const parsedEnd = endTime
       ? timeStringToDate(endTime, normalizeDate(date))
       : null;
 
     if (parsedEnd && parsedEnd <= parsedStart) {
       return NextResponse.json(
-        { success: false, message: "endTime must be greater than startDateTime" },
+        {
+          success: false,
+          message: "End time must be after start time",
+        },
         { status: 400 },
       );
     }
@@ -176,6 +183,7 @@ export async function POST(req: NextRequest) {
         endTime: parsedEnd,
         workspace: workspace || "OFFICE",
         description: description || null,
+        excluded: Boolean(excluded),
       },
     });
 

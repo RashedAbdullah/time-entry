@@ -11,15 +11,20 @@ import {
   isSameMonth,
   isToday,
 } from "date-fns";
-import { useTimeEntries } from "@/hooks/useTimeEntries";
+import { useMonthEntries } from "@/hooks/useTimeEntries";
 import { DayCell } from "./DayCell";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { calculateTotalDuration, formatDuration } from "@/lib/utils/time.utils";
+import { dateKey } from "@/lib/date-formatters";
 
-export function MonthView() {
+interface MonthViewProps {
+  onSelectDay?: (date: Date) => void;
+}
+
+export function MonthView({ onSelectDay }: MonthViewProps = {}) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { entries } = useTimeEntries();
+  const { entries } = useMonthEntries(format(currentMonth, "yyyy-MM"));
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -30,19 +35,16 @@ export function MonthView() {
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
 
-  // Group entries by date
+  // Group entries by date (using the UTC-stored calendar day so grouping is
+  // correct regardless of the viewer's local timezone)
   const entriesByDate = entries?.reduce((acc: any, entry: any) => {
-    const date = format(new Date(entry.date), "yyyy-MM-dd");
+    const date = dateKey(entry.date);
     if (!acc[date]) acc[date] = [];
     acc[date].push(entry);
     return acc;
   }, {});
 
-  const currentMonthEntries = entries?.filter((entry: any) =>
-    isSameMonth(new Date(entry.date), currentMonth)
-  ) || [];
-
-  const totalDuration = calculateTotalDuration(currentMonthEntries);
+  const totalDuration = calculateTotalDuration(entries || []);
 
   return (
     <div>
@@ -102,6 +104,7 @@ export function MonthView() {
               entries={dayEntries}
               isCurrentMonth={isSameMonth(day, currentMonth)}
               isToday={isToday(day)}
+              onSelectDay={onSelectDay}
             />
           );
         })}

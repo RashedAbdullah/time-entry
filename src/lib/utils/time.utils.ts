@@ -44,6 +44,7 @@ export function parseDuration(duration: string): number {
 
 export function calculateTotalDuration(entries: any[]): number {
   return entries.reduce((total, entry) => {
+    if (entry.excluded) return total;
     if (entry.endTime) {
       return (
         total +
@@ -87,7 +88,7 @@ export function groupEntriesByProject(entries: any[]): Record<string, any[]> {
       };
     }
     acc[projectId].entries.push(entry);
-    if (entry.endTime) {
+    if (entry.endTime && !entry.excluded) {
       acc[projectId].totalDuration +=
         new Date(entry.endTime).getTime() - new Date(entry.startDateTime).getTime();
     }

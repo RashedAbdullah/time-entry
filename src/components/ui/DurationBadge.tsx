@@ -20,7 +20,7 @@ export function DurationBadge({
   return (
     <Badge
       variant={isActive ? "default" : "secondary"}
-      className={cn("gap-1", isActive && "animate-pulse", className)}
+      className={cn("gap-1 font-mono", isActive && "animate-pulse", className)}
     >
       <Clock className={cn("h-3 w-3", isActive && "animate-spin")} />
       {formatDuration(duration)}

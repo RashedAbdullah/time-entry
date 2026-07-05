@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTimeEntries } from "@/hooks/useTimeEntries";
@@ -24,12 +24,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   timeEntrySchema,
   type TimeEntryFormData,
 } from "@/lib/validations/time-entry.schema";
+import { format } from "date-fns";
+import { toast } from "sonner";
 
-export function TimeEntryForm() {
+interface TimeEntryFormProps {
+  date?: Date;
+}
+
+export function TimeEntryForm({ date = new Date() }: TimeEntryFormProps) {
   const { createEntry, isLoading } = useTimeEntries();
   const { projects } = useProjects();
 
@@ -40,13 +47,35 @@ export function TimeEntryForm() {
       endTime: "",
       description: "",
       workspace: "OFFICE",
-      date: new Date(),
+      date,
+      excluded: false,
     },
   });
 
+  useEffect(() => {
+    form.setValue("date", date);
+  }, [date, form]);
+
   const onSubmit = async (data: TimeEntryFormData) => {
-    await createEntry(data);
-    form.reset();
+    try {
+      await createEntry({
+        ...data,
+        date: format(data.date, "yyyy-MM-dd"),
+        projectId: data.projectId || null,
+      });
+      toast.success("Time entry added");
+      form.reset({
+        startDateTime: "",
+        endTime: "",
+        description: "",
+        workspace: "OFFICE",
+        date,
+        excluded: false,
+        projectId: "",
+      });
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to create entry");
+    }
   };
 
   return (
@@ -122,7 +151,7 @@ export function TimeEntryForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Workspace</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select workspace" />
@@ -134,6 +163,25 @@ export function TimeEntryForm() {
                 </SelectContent>
               </Select>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="excluded"
+          render={({ field }) => (
+            <FormItem className="flex items-center justify-between rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <FormLabel>Exclude from totals</FormLabel>
+                <p className="text-xs text-muted-foreground">
+                  Keep this entry logged but leave it out of worked hours &amp;
+                  salary calculations
+                </p>
+              </div>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
             </FormItem>
           )}
         />

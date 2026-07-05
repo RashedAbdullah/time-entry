@@ -1,12 +1,26 @@
+import { todayDateKey } from "@/lib/date-formatters";
+
 const API_BASE = "/api";
 
-const date = new Date().toISOString().split("T")[0];
+async function parseOrThrow(res: Response, fallbackMessage: string) {
+  const body = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(body?.message || fallbackMessage);
+  }
+  return body;
+}
 
 export const api = {
-  async getTodayEntries() {
+  async getEntriesByDate(date: string = todayDateKey()) {
     const res = await fetch(`${API_BASE}/time-entries?date=${date}`);
-    if (!res.ok) throw new Error("Failed to fetch today entries");
-    return res.json();
+    return parseOrThrow(res, "Failed to fetch entries for this date");
+  },
+
+  async getEntriesByMonth(monthKey: string) {
+    const res = await fetch(
+      `${API_BASE}/time-entries?month=${monthKey}&limit=500`,
+    );
+    return parseOrThrow(res, "Failed to fetch entries for this month");
   },
 
   async createEntry(data: any) {
@@ -15,26 +29,7 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to create entry");
-    return res.json();
-  },
-
-  async startTimer(data: any) {
-    const res = await fetch(`${API_BASE}/time-entries/start`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error("Failed to start timer");
-    return res.json();
-  },
-
-  async stopTimer() {
-    const res = await fetch(`${API_BASE}/time-entries/stop`, {
-      method: "POST",
-    });
-    if (!res.ok) throw new Error("Failed to stop timer");
-    return res.json();
+    return parseOrThrow(res, "Failed to create entry");
   },
 
   async updateEntry(id: string, data: any) {
@@ -43,16 +38,14 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error("Failed to update entry");
-    return res.json();
+    return parseOrThrow(res, "Failed to update entry");
   },
 
   async deleteEntry(id: string) {
     const res = await fetch(`${API_BASE}/time-entries/${id}`, {
       method: "DELETE",
     });
-    if (!res.ok) throw new Error("Failed to delete entry");
-    return res.json();
+    return parseOrThrow(res, "Failed to delete entry");
   },
 
   async adjustTime(entryId: string, data: any) {
@@ -61,13 +54,11 @@ export const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...data, timeEntryId: entryId }),
     });
-    if (!res.ok) throw new Error("Failed to adjust time");
-    return res.json();
+    return parseOrThrow(res, "Failed to adjust time");
   },
 
   async getEntries() {
-    const res = await fetch(`${API_BASE}/time-entries`);
-    if (!res.ok) throw new Error("Failed to fetch entries");
-    return res.json();
+    const res = await fetch(`${API_BASE}/time-entries?limit=1000`);
+    return parseOrThrow(res, "Failed to fetch entries");
   },
 };

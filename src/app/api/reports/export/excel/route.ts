@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ExcelJS from "exceljs";
 import { format } from "date-fns";
+import { dateKey, dateToTimeString, toDisplayDate } from "@/lib/date-formatters";
 
 export async function GET(req: NextRequest) {
   try {
@@ -48,7 +49,7 @@ export async function GET(req: NextRequest) {
     ];
 
     const totalMinutes = entries.reduce((sum: number, e) => {
-      if (e.endTime) {
+      if (e.endTime && !e.excluded) {
         return (
           sum + (e.endTime.getTime() - e.startDateTime.getTime()) / (1000 * 60)
         );
@@ -58,9 +59,7 @@ export async function GET(req: NextRequest) {
 
     const totalHours = Math.floor(totalMinutes / 60);
     const remainingMinutes = Math.floor(totalMinutes % 60);
-    const uniqueDays = new Set(
-      entries.map((e) => format(new Date(e.date), "yyyy-MM-dd")),
-    ).size;
+    const uniqueDays = new Set(entries.map((e) => dateKey(e.date))).size;
 
     summarySheet.addRow([
       "Report Period",
@@ -92,6 +91,7 @@ export async function GET(req: NextRequest) {
       { header: "End Time", key: "endTime", width: 10 },
       { header: "Duration", key: "duration", width: 15 },
       { header: "Adjustments", key: "adjustments", width: 12 },
+      { header: "Excluded", key: "excluded", width: 10 },
     ];
 
     // Style header
@@ -125,17 +125,18 @@ export async function GET(req: NextRequest) {
       );
 
       detailsSheet.addRow({
-        date: format(new Date(entry.date), "PP"),
+        date: format(toDisplayDate(entry.date), "PP"),
         project: entry.project?.name || "-",
         description: entry.description || "-",
         workspace: entry.workspace,
-        startDateTime: format(start, "HH:mm"),
-        endTime: end ? format(end, "HH:mm") : "-",
+        startDateTime: dateToTimeString(start),
+        endTime: end ? dateToTimeString(end) : "-",
         duration: duration,
         adjustments:
           adjustmentsTotal !== 0
             ? `${adjustmentsTotal > 0 ? "+" : ""}${adjustmentsTotal}m`
             : "-",
+        excluded: entry.excluded ? "Yes" : "-",
       });
     });
 
@@ -152,7 +153,7 @@ export async function GET(req: NextRequest) {
             entryCount: 0,
           };
         }
-        if (entry.endTime) {
+        if (entry.endTime && !entry.excluded) {
           const minutes =
             (entry.endTime.getTime() - entry.startDateTime.getTime()) / (1000 * 60);
           acc[entry.project.id].totalMinutes += minutes;

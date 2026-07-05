@@ -14,8 +14,12 @@ model User {
   projects    Project[]
   timeEntries TimeEntry[]
   adjustments TimeAdjustment[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+
+  monthlyGoalHours Int? // e.g. 160 or 200
+  monthlySalary    Decimal? @db.Decimal(12, 2) // salary earned for monthlyGoalHours
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([email])
 }
@@ -53,6 +57,7 @@ model TimeEntry {
 
   workspace   WorkspaceType @default(OFFICE)
   description String?
+  excluded    Boolean       @default(false) // excluded from totals/goal/salary calculations
 
   adjustments TimeAdjustment[]
 

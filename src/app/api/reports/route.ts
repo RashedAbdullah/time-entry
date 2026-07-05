@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { startOfDay, endOfDay, format, eachDayOfInterval } from "date-fns";
+import { dateKey, dateToTimeString } from "@/lib/date-formatters";
 
 export async function GET(req: NextRequest) {
   try {
@@ -78,13 +78,14 @@ export async function GET(req: NextRequest) {
 
       return {
         id: entry.id,
-        date: format(new Date(entry.date), "yyyy-MM-dd"),
-        startDateTime: format(start, "HH:mm"),
-        endTime: end ? format(end, "HH:mm") : null,
+        date: dateKey(entry.date),
+        startDateTime: dateToTimeString(start),
+        endTime: end ? dateToTimeString(end) : null,
         duration: formatDuration(durationMs),
         durationHours: Number(durationHours.toFixed(2)),
         description: entry.description,
         workspace: entry.workspace,
+        excluded: entry.excluded,
         project: entry.project
           ? {
               id: entry.project.id,
@@ -95,8 +96,11 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    // Calculate summary statistics
-    const totalDurationMs = processedEntries.reduce(
+    // Calculate summary statistics (excluded entries are shown but don't
+    // count toward totals)
+    const includedEntries = processedEntries.filter((e) => !e.excluded);
+
+    const totalDurationMs = includedEntries.reduce(
       (sum, e) => sum + e.durationHours * 60 * 60 * 1000,
       0,
     );
@@ -112,7 +116,9 @@ export async function GET(req: NextRequest) {
         };
       }
       acc[entry.date].entries.push(entry);
-      acc[entry.date].totalHours += entry.durationHours;
+      if (!entry.excluded) {
+        acc[entry.date].totalHours += entry.durationHours;
+      }
       return acc;
     }, {});
 
@@ -122,7 +128,7 @@ export async function GET(req: NextRequest) {
     }));
 
     // Prepare chart data
-    const chartData = processedEntries.reduce((acc: any, entry) => {
+    const chartData = includedEntries.reduce((acc: any, entry) => {
       const date = entry.date;
       if (!acc[date]) {
         acc[date] = {

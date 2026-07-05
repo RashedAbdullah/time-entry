@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { Ubuntu } from "next/font/google";
+import { Ubuntu, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const ubuntu = Ubuntu({
   variable: "--font-ubuntu",
   weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -70,9 +77,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${ubuntu.variable} font-ubuntu  antialiased`}>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${ubuntu.variable} ${jetbrainsMono.variable} font-ubuntu antialiased`}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

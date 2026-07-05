@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useTimeEntries } from "@/hooks/useTimeEntries";
@@ -37,7 +38,7 @@ import {
 import { ProjectSelector } from "../projects/ProjectSelector";
 import { format } from "date-fns";
 import { useEffect } from "react";
-import { dateToTimeString } from "@/lib/date-formatters";
+import { dateToTimeString, toDisplayDate } from "@/lib/date-formatters";
 import { toast } from "sonner";
 
 interface TimeEntry extends TimeEntryFormData {
@@ -67,14 +68,14 @@ export const AddEditEntryModal = ({
       endTime: dateToTimeString(defaultValues?.endTime || "") || "",
       description: defaultValues?.description || "",
       workspace: defaultValues?.workspace || "OFFICE",
-      date: defaultValues?.date ? new Date(defaultValues.date) : date,
+      date: defaultValues?.date ? toDisplayDate(defaultValues.date) : date,
       projectId: defaultValues?.projectId || "",
+      excluded: defaultValues?.excluded || false,
     },
   });
 
   const onSubmit = async (data: TimeEntryFormData) => {
     try {
-      console.log(data.endTime);
       if (defaultValues?.id) {
         await updateEntry(defaultValues.id, {
           ...data,
@@ -94,9 +95,8 @@ export const AddEditEntryModal = ({
       }
 
       form.reset();
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to create or update time entry");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to create or update time entry");
     }
   };
 
@@ -107,8 +107,9 @@ export const AddEditEntryModal = ({
         endTime: dateToTimeString(defaultValues?.endTime || "") || "",
         description: defaultValues?.description || "",
         workspace: defaultValues?.workspace || "OFFICE",
-        date: defaultValues?.date ? new Date(defaultValues.date) : date,
+        date: defaultValues?.date ? toDisplayDate(defaultValues.date) : date,
         projectId: defaultValues?.projectId || "",
+        excluded: defaultValues?.excluded || false,
       });
     } else if (open && !defaultValues?.id) {
       form.reset({
@@ -118,6 +119,7 @@ export const AddEditEntryModal = ({
         workspace: "OFFICE",
         date: date,
         projectId: "",
+        excluded: false,
       });
     }
   }, [open, defaultValues, date, form]);
@@ -224,6 +226,27 @@ export const AddEditEntryModal = ({
                     </SelectContent>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="excluded"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Exclude from totals</FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      Leave this entry out of worked hours &amp; salary
+                    </p>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx prisma *)",
+      "Bash(npx shadcn@latest add switch --yes)",
+      "Bash(npx tsc *)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(curl -sf http://localhost:3000)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(npm ls *)",
+      "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")",
+      "Bash(mkdir -p /private/tmp/claude-501/-Users-rashedabdullah-Desktop-Projects-time-entry/ca98cc65-70c2-40e2-b6b5-4d5313f9b968/scratchpad/pw-test)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Read(//Users/rashedabdullah/Library/Caches/ms-playwright/**)",
+      "Read(//Users/rashedabdullah/.cache/**)",
+      "Bash(mkdir -p screenshots)",
+      "Bash(node verify.js)",
+      "Bash(sleep 3; cat /tmp/timeentry-dev-3010.log)",
+      "Read(//private/tmp/**)",
+      "Bash(curl -sf http://localhost:3010)",
+      "Bash(break)",
+      "Bash(pkill -f \"next dev.*3010\")",
+      "Bash(pkill -f \"app-copy\")",
+      "Bash(ps -o pid,lstart,command -p 87636)",
+      "Bash(kill 87636)",
+      "Bash(rm -rf screenshots)"
+    ]
+  }
+}

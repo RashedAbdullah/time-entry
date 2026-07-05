@@ -83,8 +83,15 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const { startDateTime, endTime, projectId, workspace, description, date } =
-      body;
+    const {
+      startDateTime,
+      endTime,
+      projectId,
+      workspace,
+      description,
+      date,
+      excluded,
+    } = body;
 
     /* ---------------------------------
        Check Entry Ownership
@@ -108,15 +115,21 @@ export async function PATCH(
        Validate Time Logic
     ---------------------------------- */
 
+    // The calendar day the new start/end times should be anchored to. Fall
+    // back to the entry's existing day if the client didn't send one, so a
+    // partial update (e.g. only changing the project) never re-derives the
+    // wrong date from an undefined value.
+    const dayForTimes = date ? normalizeDate(date) : existingEntry.date;
+
     let parsedStart = existingEntry.startDateTime;
     let parsedEnd = existingEntry.endTime;
 
-    if (startDateTime) parsedStart = timeStringToDate(startDateTime, normalizeDate(date));
-    if (endTime) parsedEnd = timeStringToDate(endTime, normalizeDate(date));
+    if (startDateTime) parsedStart = timeStringToDate(startDateTime, dayForTimes);
+    if (endTime) parsedEnd = timeStringToDate(endTime, dayForTimes);
 
     if (parsedEnd && parsedEnd <= parsedStart) {
       return NextResponse.json(
-        { success: false, message: "endTime must be greater than startDateTime" },
+        { success: false, message: "End time must be after start time" },
         { status: 400 },
       );
     }
@@ -144,12 +157,14 @@ export async function PATCH(
     const updated = await prisma.timeEntry.update({
       where: { id },
       data: {
+        date: dayForTimes,
         startDateTime: parsedStart,
         endTime: parsedEnd,
-        projectId: projectId ?? existingEntry.projectId,
+        projectId: projectId !== undefined ? projectId : existingEntry.projectId,
         workspace: workspace ?? existingEntry.workspace,
         description:
           description !== undefined ? description : existingEntry.description,
+        excluded: excluded !== undefined ? Boolean(excluded) : existingEntry.excluded,
       },
     });
 

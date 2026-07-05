@@ -107,19 +107,19 @@ const Insights = () => {
         <TabsContent value="overview" className="space-y-4">
           {reportData && (
             <>
-              {/* Summary Cards */}
-              <div className="grid gap-4 md:grid-cols-4">
-                <Card>
+              {/* Summary Cards — asymmetric: Total Hours as the hero tile */}
+              <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+                <Card className="col-span-2 lg:row-span-2 flex flex-col justify-center bg-linear-to-br from-primary/10 to-transparent">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">
                       Total Hours
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
+                    <div className="text-4xl font-bold font-mono text-primary">
                       {reportData.summary.totalHours}
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Across {reportData.summary.totalDays} days
                     </p>
                   </CardContent>
@@ -131,7 +131,7 @@ const Insights = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
+                    <div className="text-2xl font-bold font-mono">
                       {reportData.summary.averagePerDay}
                     </div>
                     <p className="text-xs text-muted-foreground">
@@ -146,7 +146,7 @@ const Insights = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
+                    <div className="text-2xl font-bold font-mono">
                       {reportData.summary.totalEntries}
                     </div>
                     <p className="text-xs text-muted-foreground">
@@ -161,7 +161,7 @@ const Insights = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
+                    <div className="text-2xl font-bold font-mono">
                       {reportData.summary.totalProjects}
                     </div>
                     <p className="text-xs text-muted-foreground">

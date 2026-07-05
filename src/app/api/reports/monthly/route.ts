@@ -52,7 +52,9 @@ export async function GET(req: NextRequest) {
 
     const adjust = e.adjustments.reduce((a, b) => a + b.minutes, 0);
 
-    const minutes = base + adjust;
+    // Excluded entries stay visible in the day's entry list but don't count
+    // toward totals (worked hours, goal progress, salary earned).
+    const minutes = e.excluded ? 0 : base + adjust;
 
     totalMinutes += minutes;
 

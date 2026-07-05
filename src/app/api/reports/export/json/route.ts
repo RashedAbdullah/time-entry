@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
+import { dateKey } from "@/lib/date-formatters";
 
 export async function GET(req: NextRequest) {
   try {
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest) {
             entryCount: 0,
           };
         }
-        if (entry.endTime) {
+        if (entry.endTime && !entry.excluded) {
           acc[entry.project.id].totalDuration +=
             entry.endTime.getTime() - entry.startDateTime.getTime();
         }
@@ -70,14 +71,12 @@ export async function GET(req: NextRequest) {
       summary: {
         totalEntries: entries.length,
         totalTime: entries.reduce((sum, e) => {
-          if (e.endTime) {
+          if (e.endTime && !e.excluded) {
             return sum + (e.endTime.getTime() - e.startDateTime.getTime());
           }
           return sum;
         }, 0),
-        uniqueDays: new Set(
-          entries.map((e) => format(new Date(e.date), "yyyy-MM-dd")),
-        ).size,
+        uniqueDays: new Set(entries.map((e) => dateKey(e.date))).size,
       },
       entries: entries.map((entry) => ({
         id: entry.id,
@@ -86,6 +85,7 @@ export async function GET(req: NextRequest) {
         endTime: entry.endTime,
         description: entry.description,
         workspace: entry.workspace,
+        excluded: entry.excluded,
         project: entry.project
           ? {
               id: entry.project.id,

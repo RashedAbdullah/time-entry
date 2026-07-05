@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu, User, Settings, LogOut, Clock } from "lucide-react";
+import ModeToggle from "@/components/mode-toggle";
 
 export function Navigations() {
   const { data: session } = useSession();
@@ -25,13 +26,13 @@ export function Navigations() {
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
             <Clock className="h-5 w-5 text-primary" />
-            <span className="font-bol">TimeTracker</span>
+            <span className="font-bold tracking-tight">TimeTracker</span>
           </Link>
         </div>
 
         {/* Right side actions */}
         <div className="flex flex-1 items-center justify-end space-x-2">
-          {/* <ModeToggle /> */}
+          <ModeToggle />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -63,7 +64,7 @@ export function Navigations() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/settings">
+                <Link href="/?tab=settings">
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </Link>

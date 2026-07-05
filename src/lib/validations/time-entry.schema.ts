@@ -1,5 +1,13 @@
 import * as z from "zod";
 
+// Compares two "HH:mm" strings by their actual minute-of-day value, not
+// lexically — lexical comparison happens to work for same-day HH:mm pairs,
+// but keeping it explicit avoids subtle breakage (e.g. around "00:00").
+function toMinutesOfDay(time: string) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
 export const timeEntrySchema = z
   .object({
     startDateTime: z.string().min(1, "Start time is required"),
@@ -11,16 +19,19 @@ export const timeEntrySchema = z
       .optional(),
     workspace: z.enum(["OFFICE", "HOME"]),
     date: z.date(),
+    excluded: z.boolean().optional(),
   })
   .refine(
     (data) => {
       if (data.startDateTime && data.endTime) {
-        return data.endTime > data.startDateTime;
+        return toMinutesOfDay(data.endTime) > toMinutesOfDay(data.startDateTime);
       }
       return true;
     },
     {
-      message: "End time must be after start time",
+      // Entries can't span midnight into the next day (yet) — end time must
+      // fall later on the same calendar day as start time.
+      message: "End time must be after start time, on the same day",
       path: ["endTime"],
     },
   );

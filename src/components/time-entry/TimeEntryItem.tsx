@@ -19,6 +19,9 @@ import {
 import { AddEditEntryModal } from "../modals/add-edit-entry.modal";
 import { useConfirmDialog } from "@/hooks/confirm-dialog-provider";
 import { toast } from "sonner";
+import { toDisplayDate } from "@/lib/date-formatters";
+import { EyeOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TimeEntryItemProps {
   entry: any;
@@ -27,7 +30,7 @@ interface TimeEntryItemProps {
 export function TimeEntryItem({ entry }: TimeEntryItemProps) {
   const [showAdjustment, setShowAdjustment] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { deleteEntry } = useTimeEntries();
+  const { deleteEntry, updateEntry } = useTimeEntries();
 
   const duration = entry.endTime
     ? new Date(entry.endTime).getTime() - new Date(entry.startDateTime).getTime()
@@ -46,9 +49,19 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
       if (!ok) return;
       await deleteEntry(entry.id);
       toast.success("Successfully Deleted");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete");
+    }
+  };
+
+  const handleToggleExcluded = async () => {
+    try {
+      await updateEntry(entry.id, { excluded: !entry.excluded });
+      toast.success(
+        entry.excluded ? "Entry included in totals" : "Entry excluded from totals",
+      );
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to update entry");
     }
   };
 
@@ -61,17 +74,28 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
         defaultValues={entry}
         onSuccess={() => setIsEditing(false)}
       />
-      <Card className="p-3 hover:shadow-md transition-shadow">
+      <Card
+        className={cn(
+          "p-3 hover:shadow-md transition-shadow",
+          entry.excluded && "opacity-60",
+        )}
+      >
         <div className="flex items-start justify-between">
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
               {entry.project && <ProjectBadge project={entry.project} />}
               <WorkspaceIcon type={entry.workspace} />
-              <span className="text-xs text-muted-foreground">
-                {format(new Date(entry.startDateTime), "hh:mm a")}
+              <span className="text-xs text-muted-foreground font-mono">
+                {format(toDisplayDate(entry.startDateTime), "hh:mm a")}
                 {entry.endTime &&
-                  ` - ${format(new Date(entry.endTime), "hh:mm a")}`}
+                  ` - ${format(toDisplayDate(entry.endTime), "hh:mm a")}`}
               </span>
+              {entry.excluded && (
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground border rounded-full px-2 py-0.5">
+                  <EyeOff className="h-3 w-3" />
+                  Excluded
+                </span>
+              )}
             </div>
 
             {entry.description && (
@@ -82,7 +106,7 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
               <DurationBadge duration={duration} isActive={!entry.endTime} />
 
               {entry.adjustments?.length > 0 && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground font-mono">
                   (Adjusted:{" "}
                   {entry.adjustments.reduce(
                     (acc: number, adj: any) => acc + adj.minutes,
@@ -108,6 +132,10 @@ export function TimeEntryItem({ entry }: TimeEntryItemProps) {
               <DropdownMenuItem onClick={() => setShowAdjustment(true)}>
                 <Clock className="h-4 w-4 mr-2" />
                 Adjust Time
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleToggleExcluded}>
+                <EyeOff className="h-4 w-4 mr-2" />
+                {entry.excluded ? "Include in totals" : "Exclude from totals"}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleDelete}
